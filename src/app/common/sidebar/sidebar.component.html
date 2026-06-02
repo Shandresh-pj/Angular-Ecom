@@ -1,0 +1,126 @@
+<div
+    class="sidebar-area bg-white transition active"
+    [ngClass]="{ active: isSidebarToggled }"
+    [class.card-borderd]="themeService.isCardBordered()"
+    [class.dark-sidebar]="themeService.isSidebarDark()"
+    [class.hide-sidebar]="themeService.isHideSidebar()"
+    [class.component-dark-theme]="themeService.isDark()"
+    [class.right-sidebar]="themeService.isRightSidebar()"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+    [class.card-with-box-shadow]="themeService.isCardWithBoxShadow()"
+     (mouseenter)="onMouseEnter(true)" (mouseleave)="onMouseEnter(false)"
+>
+    <div class="logo bg-white" [ngClass]="{ 'logo-padding':isSidebarToggled  && (!hasMouseEntered || !mouseHover) && (!disablePaddingkey && screenWidth > 1200)}">
+        <a
+            routerLink="/dashboard"
+            class="d-flex align-items-center position-relative"
+        >
+            <!-- <img
+                src="Logo/fb_logo1.jpg"
+                class="transition position-relative"
+                alt="logo-icon"
+            /> -->
+           <div >
+                 <img [src]="imagechange" alt="logo-icon"> 
+            </div>
+         </a> 
+    </div>
+    <div
+        (click)="toggle()"
+        class="burger-menu transition"
+        [ngClass]="{ active: isSidebarToggled }"
+    >
+        <span class="top-bar transition d-block bg-black"></span>
+        <span class="middle-bar transition d-block bg-black"></span>
+        <span class="bottom-bar transition d-block bg-black"></span>
+    </div>
+    <ng-scrollbar visibility="hover">
+        <div class="sidebar-inner">
+            <div class="sidebar-menu">
+                <mat-accordion>
+                <mat-expansion-panel
+                hideToggle="true"
+                [expanded]="false"
+                disabled
+                >
+                  <mat-expansion-panel-header >
+                    <mat-panel-title>
+                      <mat-icon>dashboard</mat-icon>
+                      <a
+                        routerLink="/dashboard"
+                        [queryParams]="{ data: encrypted }"
+                         [class.active]="activeRouteUrl.startsWith('/dashboard')"
+                        class="sidemenu-item title ms-2"
+                      >
+                        Dashboard
+                      </a>
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                </mat-expansion-panel>
+                </mat-accordion>
+                  
+    
+                  <mat-accordion>
+                    <mat-expansion-panel
+                        (opened)="panelOpenState.set(true)"
+                        (closed)="panelOpenState.set(false)"
+                    >
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <img src="/Logo/masters.svg"  class="filter" alt="mastericon" style="width: 24px; height: 24px;">
+                                <span class="title ms-2"> Master </span>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <ul class="sidebar-sub-menu" (click)="$event.stopPropagation()">
+                                      <!-- <li class="sidemenu-item">
+                                            <a
+                                                routerLink="/vehicletype"
+                                                routerLinkActive="active"
+                                                [routerLinkActiveOptions]="{
+                                                    exact: true
+                                                }"
+                                                class="sidemenu-link"
+                                            >
+                                                Vehicle Type
+                                               
+                                            </a>
+                                        </li> -->
+                                         @for (route of routes; track route) {
+                          <li class="sidemenu-item" [class.active]="isRouteActive(route.Url)">
+                            <a
+                              [routerLink]="route.Url"
+                              [queryParams]="{ data: encrypted }"
+                              class="sidemenu-link"
+                              routerLinkActive="active"
+                              [routerLinkActiveOptions]="{ exact: false }"
+                            >
+                              {{ route.Label }}
+                            </a>
+                          </li>
+                        }
+                                        
+                        </ul>
+                        
+                    </mat-expansion-panel></mat-accordion>
+                   <mat-accordion>
+                <mat-expansion-panel
+                hideToggle="true"
+                [expanded]="false"
+                disabled
+                >
+                  <mat-expansion-panel-header >
+                    <mat-panel-title>
+                      <img src="/Logo/masters.svg"  class="filter" alt="mastericon" style="width: 24px; height: 24px;">
+                      <a
+                        routerLink="/setting"
+                        [queryParams]="{ data: encrypted }"
+                         [class.active]="activeRouteUrl.startsWith('/setting')"
+                        class="sidemenu-item title ms-2"
+                      >
+                        Setting
+                      </a>
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                </mat-expansion-panel>
+                </mat-accordion></div></div></ng-scrollbar>
+            

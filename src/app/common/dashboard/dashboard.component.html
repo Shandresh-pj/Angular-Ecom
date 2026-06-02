@@ -1,0 +1,194 @@
+<mat-card class="apps-to-do-list-card table-style-two mb-25 border-radius d-block bg-white border-0 shadow-none"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()">
+<div class="container-fluid p-4">
+  <div class="row g-3">
+ 
+    <!-- Dealers -->
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="admin-dashboard-couter-box" style="--card-color:#5b57f5;">
+        <div class="card-top-row">
+          <div class="admin-icons-1" style="background:#5b57f51a;">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" fill="#5b57f5"/>
+              <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" fill="#5b57f5"/>
+            </svg>
+          </div>
+          <p class="admin-content-num">{{dashboardData.Dealers.total}}</p>
+        </div>
+        <p class="stat-title">Dealers</p>
+        <div class="trend-row">
+          <span class="trend-arrow">↑</span>
+          <span class="trend-label">Last Week :</span>
+          <span class="trend-value">{{dashboardData.Dealers.lastWeek}}</span>
+        </div>
+        <div class="sparkline-wrap">
+          <svg viewBox="0 0 120 38" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#5b57f5" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#5b57f5" stop-opacity="0.02"/>
+              </linearGradient>
+            </defs>
+            <polygon class="sparkline-fill" points="0,30 20,22 40,26 60,15 80,19 100,11 120,7 120,38 0,38" fill="url(#g1)"/>
+            <polyline class="sparkline-line" points="0,30 20,22 40,26 60,15 80,19 100,11 120,7" fill="none" stroke="#5b57f5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Resellers -->
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="admin-dashboard-couter-box" style="--card-color:#f5a623;">
+        <div class="card-top-row">
+          <div class="admin-icons-1" style="background:#f5a6231a;">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z" fill="#f5a623"/>
+            </svg>
+          </div>
+          <p class="admin-content-num">{{dashboardData.Resellers.total}}</p>
+        </div>
+        <p class="stat-title">Resellers</p>
+        <div class="trend-row">
+          <span class="trend-arrow">↑</span>
+          <span class="trend-label">Last Week :</span>
+          <span class="trend-value">{{dashboardData.Resellers.lastWeek}}</span>
+        </div>
+        <div class="sparkline-wrap">
+          <svg viewBox="0 0 120 38" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#f5a623" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#f5a623" stop-opacity="0.02"/>
+              </linearGradient>
+            </defs>
+            <polygon class="sparkline-fill" points="0,32 20,25 45,29 65,17 85,21 120,9 120,38 0,38" fill="url(#g2)"/>
+            <polyline class="sparkline-line" points="0,32 20,25 45,29 65,17 85,21 120,9" fill="none" stroke="#f5a623" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Students -->
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="admin-dashboard-couter-box" style="--card-color:#00b2d6;">
+        <div class="card-top-row">
+          <div class="admin-icons-1" style="background:#00b2d61a;">
+             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 3L1 9L12 15L21 10.09V17H23V9L12 3Z" fill="#00b2d6"/>
+              <path d="M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z" fill="#00b2d6"/>
+            </svg>
+          </div>
+          <p class="admin-content-num">{{dashboardData.Students.total}}</p>
+        </div>
+        <p class="stat-title">Students</p>
+        <div class="trend-row">
+          <span class="trend-arrow">↑</span>
+          <span class="trend-label">Last Week :</span>
+          <span class="trend-value">{{dashboardData.Students.lastWeek}}</span>
+        </div>
+        <div class="sparkline-wrap">
+          <svg viewBox="0 0 120 38" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g3" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00b2d6" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#00b2d6" stop-opacity="0.02"/>
+              </linearGradient>
+            </defs>
+            <polygon class="sparkline-fill" points="0,28 25,20 50,25 75,13 100,17 120,9 120,38 0,38" fill="url(#g3)"/>
+            <polyline class="sparkline-line" points="0,28 25,20 50,25 75,13 100,17 120,9" fill="none" stroke="#00b2d6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Videos -->
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="admin-dashboard-couter-box" style="--card-color:#4caf7d;">
+        <div class="card-top-row">
+          <div class="admin-icons-1" style="background:#4caf7d1a;">
+           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17 10.5V7C17 6.45 16.55 6 16 6H4C3.45 6 3 6.45 3 7V17C3 17.55 3.45 18 4 18H16C16.55 18 17 17.55 17 17V13.5L21 17.5V6.5L17 10.5Z" fill="#4caf7d"/>
+            </svg>
+          </div>
+          <p class="admin-content-num">{{dashboardData.Videos.total}}</p>
+        </div>
+        <p class="stat-title">Videos</p>
+        <div class="trend-row">
+          <span class="trend-arrow">↑</span>
+          <span class="trend-label">Last Week :</span>
+          <span class="trend-value">{{dashboardData.Videos.lastWeek}}</span>
+        </div>
+        <div class="sparkline-wrap">
+          <svg viewBox="0 0 120 38" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g4" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#4caf7d" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#4caf7d" stop-opacity="0.02"/>
+              </linearGradient>
+            </defs>
+            <polygon class="sparkline-fill" points="0,32 20,26 45,30 70,15 95,19 120,7 120,38 0,38" fill="url(#g4)"/>
+            <polyline class="sparkline-line" points="0,32 20,26 45,30 70,15 95,19 120,7" fill="none" stroke="#4caf7d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3 mt-4">
+      <div class="admin-dashboard-couter-box" style="--card-color:#e91e63;">
+        
+        <div class="card-top-row">
+          <div class="admin-icons-1" style="background:#e91e631a;">
+            <svg viewBox="0 0 24 24">
+              <path fill="#e91e63"
+                d="M21 16V8L12 3L3 8V16L12 21L21 16ZM12 5.3L18.74 9L12 12.7L5.26 9L12 5.3Z"/>
+            </svg>
+          </div>
+    
+          <p class="admin-content-num">
+            {{dashboardData.Products.total}}
+          </p>
+        </div>
+    
+        <p class="stat-title">Products</p>
+    
+        <div class="trend-row">
+          <span class="trend-arrow">↑</span>
+          <span class="trend-label">Last Week :</span>
+          <span class="trend-value">
+            {{dashboardData.Products.lastWeek}}
+          </span>
+        </div>
+
+        <div class="sparkline-wrap">
+          <svg viewBox="0 0 120 38" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g5" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#e91e63" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#e91e63" stop-opacity="0.02"/>
+              </linearGradient>
+            </defs>
+        
+            <polygon
+              class="sparkline-fill"
+              points="0,30 20,24 40,28 60,18 80,22 100,12 120,8 120,38 0,38"
+              fill="url(#g5)"
+            />
+        
+            <polyline
+              class="sparkline-line"
+              points="0,30 20,24 40,28 60,18 80,22 100,12 120,8"
+              fill="none"
+              stroke="#e91e63"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+    
+      </div>
+    </div>
+ 
+  </div>
+</div>
+</mat-card>

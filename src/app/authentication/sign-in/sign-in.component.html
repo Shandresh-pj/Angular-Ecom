@@ -1,0 +1,68 @@
+<div
+    [class.dark-theme]="themeService.isDark()" class="contentset"
+>
+    <div
+        class="trezo-form ml-auto mr-auto "
+        [class.component-dark-theme]="themeService.isDark()"
+        [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+    >
+        <div class="row ">
+            <!-- <div class="col-lg-6 col-md-12 order-2 order-lg-1">
+                <div class="form-image">
+                     <img src="Logo/futurelogo.png" alt="sign-in-image" >
+                </div>
+            </div> -->
+            <div class="col-12 col-lg-6 col-md-12 order-2 order-lg-1">
+                <div class="form-content nothing01">
+                    <div class="box-image">
+                    <img src="Logo/fb_logo.jpg" alt="sign-in-image">
+                    </div>
+                    </div>
+                    </div>
+                   <div class="col-12 col-lg-6 col-md-12 order-1 order-lg-2">
+                    <form [formGroup]="LoginForm" class="ap-content">
+                        <div class="tittle">
+                                <h2>Welcome to Future Believe </h2>
+                            </div>
+                        <div class="form-group mb-3 text-start">
+                                <label class="main-label d-block fw-medium text-black mb-1" style="text-align: start;">
+                                    Email Address
+                                </label>
+                                <mat-form-field appearance="outline" class="w-100 font-sans">
+                                    <input matInput type="email" placeholder="Enter your email" formControlName="Email" style="font-family: inherit;">
+                                </mat-form-field>
+                            </div>
+                            <div class="form-group mb-3 text-start">
+                                <label class="main-label d-block fw-medium text-black mb-1" style="text-align: start;">
+                                    Password
+                                </label>
+                                <mat-form-field appearance="outline" class="w-100 font-sans">
+                                    <input matInput [type]="hide ? 'password' : 'text'" placeholder="Enter your password" formControlName="Password" style="font-family: inherit;">
+                                    <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-checked]="hide" type="button" style="border: none; background: transparent;">
+                                        <i class="material-symbols-outlined">{{hide ? 'visibility_off' : 'visibility'}}</i>
+                                    </button>
+                                </mat-form-field>
+                            </div>
+                            <div class="moving-bton">
+                                <button mat-button type="button" (click)="onSubmit(LoginForm)" class="otp-btn">
+                                    <span class="btn-content">
+                                        <i class="material-symbols-outlined">login</i>
+                                        <span>Sign in</span>
+                                    </span>
+                                </button>
+                            </div>
+
+                        <p class="info">
+                            <mat-checkbox [checked]="alwaysChecked" (change)="alwaysChecked = $event.checked"></mat-checkbox> By signing in, you agree to our <a href="https://www.futurebelieve.in/index.php/seller/terms-condition/" target="_blank" rel="noopener noreferrer"><span style="color: blue">Terms and Condition </span></a> and that you have read and understand our <a  href="https://www.futurebelieve.in/index.php/seller/payment-refund-policy/" target="_blank" rel="noopener noreferrer"><span style="color: blue">Payment and Refund Policy</span></a>.
+                        </p>
+                        <!-- <p class="info">
+                            Don’t have an account. <a routerLink="/authentication/sign-up" class="fw-semibold text-primary">Sign Up</a>
+                        </p> -->
+                    </form>
+                </div>
+        </div>
+    </div>
+</div>
+           
+
+

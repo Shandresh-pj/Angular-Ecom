@@ -1,0 +1,17 @@
+<mat-form-field  [formGroup]="childForm" class="GooglePlace p-0">
+    @if(label!=''){
+    <mat-label>
+        {{label}}
+    </mat-label>
+    }
+<input
+matInput
+#autocompleteInput
+type="text"
+[formControlName]="controlName"
+(input)="onInputChange($event)" 
+(blur)="onBlur()"
+placeholder="Enter a location"
+[attr.data-form-control]="controlName"
+/>
+</mat-form-field>

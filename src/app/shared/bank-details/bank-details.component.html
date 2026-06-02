@@ -1,0 +1,100 @@
+<div class="row" [formGroup]="BankForm">
+    <h5 >
+        Bank Details
+    </h5>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <label
+                class="main-label d-block fw-medium text-black"
+            >
+                Bank Name
+            </label>
+            <mat-form-field>
+                <mat-label> Bank Name </mat-label>
+
+                <input
+                    matInput
+                    formControlName="Name"
+                     />
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <label
+                class="main-label d-block fw-medium text-black"
+            >
+                Account Type
+            </label>
+            <mat-form-field>
+                <mat-label> Account Type </mat-label>
+
+                <input
+                    matInput
+                    formControlName="AccountType"
+                    
+                />
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <label
+                class="main-label d-block fw-medium text-black"
+            >
+               IFSC Code
+            </label>
+            <mat-form-field>
+                <mat-label>IFSC Code </mat-label>
+
+                <input
+                    matInput
+                    formControlName="IfscCode"
+                     class="uppercase"
+                />
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <label
+                class="main-label d-block fw-medium text-black"
+            >
+                Account Number
+            </label>
+            <mat-form-field>
+                <mat-label> Account Number </mat-label>
+
+                <input
+                    matInput
+                    formControlName="AccountNumber"
+                     (keypress)="numericOnly($event)" maxlength="13"
+                />
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <label
+                class="main-label d-block fw-medium text-black"
+            >
+               Bank Branch
+            </label>
+            <mat-form-field>
+                <mat-label>Bank Branch </mat-label>
+
+                <input
+                    matInput
+                    formControlName="Branch"
+                     
+                />
+            </mat-form-field>
+        </div>
+    </div>
+
+</div>

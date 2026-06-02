@@ -1,0 +1,63 @@
+<mat-form-field>
+    @if(label!=''){
+    <mat-label>
+        {{label}}
+    </mat-label>
+    }
+    <!-- [placeholder]="placeholder"
+    [displayWith]="displayFn"
+} -->
+     <!-- for(opt of  $any(filteredOptions | async) ; track opt){
+            <mat-option  [value]="opt">{{opt?.Name}}</mat-option>
+        } -->
+        <!-- [formControlName]="controlName" -->
+        <!-- [formControl]="myControl" -->
+         <!-- @if(!isFormGroup){
+ <input
+      type="text"
+      matInput
+     
+      [formControl]="myControl"
+      [matAutocomplete]="auto"
+      (input)="onKeyInput($event)"
+      (click)="onSearchClick($event)"
+      (blur)="onBlur()"
+    />
+         }
+         @else{
+             <input
+      type="text"
+      matInput
+      [formControlName]="controlName" 
+     
+      [matAutocomplete]="auto"
+      (input)="onKeyInput($event)"
+      (click)="onSearchClick($event)"
+      (blur)="onBlur()"
+    />
+         } -->
+
+         <input
+          #autoInput
+      type="text"
+      matInput
+      [formControlName]="controlName" 
+      [formControl]="myControl"
+      [matAutocomplete]="auto"
+      (input)="onKeyInput($event)"
+      (click)="onSearchClick($event)"
+      (blur)="onBlur()"
+      [readonly]="isReadOnly"
+      [attr.data-form-control]="controlName"
+    />
+   
+    @if(showDeleteIcon){
+    <mat-icon matSuffix class="darkcolorclear" (click)="clearInput($event)" style="cursor: pointer;">clear</mat-icon>
+    }
+    <mat-autocomplete  #auto="matAutocomplete" [displayWith]="displayFunc" (optionSelected)="updateSelectedOption($event.option.value)">
+       
+        @for(opt of  filteredOptionsArray; track opt){
+            <mat-option  [value]="opt">{{opt?.[LabelValue?.Label]}}</mat-option>
+        }
+    </mat-autocomplete>
+  </mat-form-field>

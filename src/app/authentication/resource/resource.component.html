@@ -1,0 +1,346 @@
+<!-- Breadcrumb -->
+<div   class="breadcrumb-card mb-25 d-md-flex align-items-center justify-content-between">
+    <h5 class="mb-0">
+    Resource
+    </h5>
+    <ol class="breadcrumb list-unstyled mt-0 mb-0 p-0">
+        <li class="breadcrumb-item d-inline-block position-relative">
+            <a routerLink="/dashboard" class="d-inline-block position-relative">
+                <i class="material-symbols-outlined">
+                    home
+                </i>
+                Master
+            </a>
+        </li>
+        <li class="breadcrumb-item d-inline-block position-relative">
+      Resource
+        </li>
+    </ol>
+</div>
+
+<!-- To Do List -->
+<mat-card
+    class="apps-to-do-list-card table-style-two mb-25 border-radius d-block bg-white border-0 shadow-none"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+>
+    <mat-card-header>
+        <mat-card-title>
+            <button class="add-btn" type="button" mat-button (click)="toggleClass()">
+                <i class="material-symbols-outlined">
+                    add
+                </i>
+                Add New Resource
+            </button>
+        </mat-card-title>
+        <mat-card-subtitle>
+            <form class="search-box position-relative">
+                <label>
+                    <i class="material-symbols-outlined">
+                        search
+                    </i>
+                </label>
+                <input type="text" class="input-search" placeholder="Search here....." (keyup)="applyFilter($event)" #input>
+            </form>
+        </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+        <div class="table-responsive">
+            <table mat-table [dataSource]="dataSource">
+
+                <!-- Checkbox Column -->
+                <!-- <ng-container matColumnDef="select">
+                    <th mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox
+                            (change)="$event ? toggleAllRows() : null"
+                            [checked]="selection.hasValue() && isAllSelected()"
+                            [indeterminate]="selection.hasValue() && !isAllSelected()"
+                            [aria-label]="checkboxLabel()"
+                        >
+                        </mat-checkbox>
+                    </th>
+                    <td mat-cell *matCellDef="let row">
+                        <mat-checkbox
+                            (click)="$event.stopPropagation()"
+                            (change)="$event ? selection.toggle(row) : null"
+                            [checked]="selection.isSelected(row)"
+                            [aria-label]="checkboxLabel(row)"
+                        >
+                        </mat-checkbox>
+                    </td>
+                </ng-container> -->
+
+                <!-- ID Column -->
+                <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef>
+                        ID
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-body" (click)="toggleClass(element?.Id,'view')">
+                        {{element?.Id}}
+                    </td>
+                </ng-container>
+
+                <!-- Resource Name Column -->
+                <ng-container matColumnDef="resourcename">
+                    <th mat-header-cell *matHeaderCellDef>                        
+                   ResourceName
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <span class="d-block fw-medium text-body" (click)="toggleClass(element?.Id,'view')">
+                            {{element?.ResourceName}}
+                        </span>
+                    </td>
+                </ng-container>
+
+
+
+       
+
+                <!-- ResourceUrl Column -->
+                <ng-container matColumnDef="resourceurl" >
+                    <th mat-header-cell *matHeaderCellDef>
+                        ResourceUrl
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <span class="d-block fw-medium text-body" (click)="toggleClass(element?.Id,'view')">
+                            {{element?.ResourceUrl}}
+                        </span>
+                
+                    </td>
+                </ng-container>
+
+                  <!-- Position Column -->
+                  <ng-container matColumnDef="position" >
+                    <th mat-header-cell *matHeaderCellDef>
+                     Position
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <span class="d-block fw-medium text-body" (click)="toggleClass(element?.Id,'view')">
+                            {{element?.Position}}
+                        </span>
+                
+                    </td>
+                </ng-container>
+
+                <!-- Action Column -->
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef>
+                        Action
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div class="action-buttons d-flex align-items-center">
+                            <!-- <button type="button" mat-button>
+                                <i class="material-symbols-outlined">
+                                    visibility
+                                </i>
+                            </button> -->
+                            <button type="button" mat-button (click)="toggleClass(element?.Id,'edit')">
+                                <i class="material-symbols-outlined">
+                                    edit
+                                </i>
+                            </button>
+                            <!-- <button type="button" mat-button>
+                                <i class="material-symbols-outlined">
+                                    delete
+                                </i>
+                            </button> -->
+                        </div>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                <!-- Row shown when there is no matching data. -->
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+                </tr>
+
+            </table>
+        </div>
+    </mat-card-content>
+</mat-card>
+
+<!-- Add New Popup -->
+<div
+    class="add-new-popup"
+    [class.active]="classApplied"
+>
+    <div class="popup-dialog">
+        <mat-card class="border-radius d-block bg-white border-0 shadow-none">
+            <mat-card-header>
+                <mat-card-title>
+                    @if(addnew){
+                        <h5 class="mb-0">
+                            Add New Resource
+                        </h5>
+                    }@else if(viewOpen){
+                        <h5 class="mb-0">
+                            Edit Resource
+                        </h5>
+                    }@else{
+                        <h5 class="mb-0">
+                            View Resource
+                        </h5>  
+                    }
+                </mat-card-title>
+                <mat-card-subtitle>
+                    <button
+                        mat-button
+                        (click)="toggleClose()"
+                    >
+                        <i class="ri-close-fill"></i>
+                    </button>
+                </mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <form [formGroup]="resourceForm">
+                    <div class="row" >
+                        <mat-form-field [hidden]="true">
+                            <input matInput placeholder="" formControlName="Id" type="text" />
+                          </mat-form-field>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="main-label d-block fw-medium text-black">
+                                    Resource Name
+                                </label>
+                                <mat-form-field>
+                                    <mat-label>
+                                        Resource Name
+                                    </mat-label>
+                              <input matInput placeholder="" formControlName="ResourceName" type="text" [readonly]="!viewOpen" />
+                            </mat-form-field>
+                          </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="main-label d-block fw-medium text-black">
+                                    Resource Type
+                                </label>
+                                <mat-form-field>
+                                    <mat-label>
+                                        Resource Type
+                                    </mat-label>
+                                    @if(viewOpen){
+                                        <mat-select placeholder="" formControlName="ResourceType">
+                                            @for(resourceType of resourceTypes;track resourceType){
+                                                <mat-option  [value]="resourceType">
+                                                    {{ resourceType }}
+                                                  </mat-option>   
+                                            }
+                                        </mat-select>
+                                    }
+                                    @else{
+                                        <input matInput formControlName="ResourceType" [readonly]="!viewOpen">     
+                             
+                                    }
+                 
+                            </mat-form-field>
+                          </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="main-label d-block fw-medium text-black">
+                                    Parent Id
+                                </label>
+                                <mat-form-field>
+                                    <mat-label>
+                                        Parent Id
+                                    </mat-label>
+                                    @if(viewOpen){
+                                        <mat-select placeholder="" formControlName="ParentId">
+                                            <mat-option  [value]="0">--No Parent--</mat-option>
+                                              @for(allResource of getFilterdResources();track allResource.Id){
+                                                  <mat-option  [value]="allResource.Id">
+                                                      {{ allResource.ResourceName }}
+                                                    </mat-option>   
+                                              }
+                                         
+                                          </mat-select>
+                                    }
+                                    @else{
+                                        <input matInput formControlName="ParentId" [readonly]="!viewOpen">     
+                             
+                                    }
+   
+                            </mat-form-field>
+                          </div>
+                    </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="main-label d-block fw-medium text-black">
+                                    Resource Url
+                                </label>
+                                <mat-form-field>
+                                    <mat-label>
+                                        Resource Url
+                                    </mat-label>
+                              <input matInput placeholder="" formControlName="ResourceUrl" type="text" [readonly]="!viewOpen"  />
+                            </mat-form-field>
+                          </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="main-label d-block fw-medium text-black">
+                                    Is Public
+                                </label>
+                                <mat-form-field>
+                                    <mat-label>
+                                 Is Public
+                                    </mat-label>
+                                    @if(viewOpen){
+                                        <mat-select  formControlName="IsPublic">
+                                            @for(IsPublic of IsPublic;track IsPublic){
+                                                <mat-option [value]="IsPublic">
+                                                    {{ IsPublic }}
+                                                  </mat-option>
+                                            }
+                                   
+                                        </mat-select>
+                                    }
+                                    @else{
+                                        <input matInput formControlName="IsPublic" [readonly]="!viewOpen">     
+                             
+                                    }
+
+                            </mat-form-field>
+                          </div>
+                          </div>
+          
+                          <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="main-label d-block fw-medium text-black">
+                                    Position
+                                </label>
+                                <mat-form-field>
+                                    <mat-label>
+                                        Position
+                                    </mat-label>
+                              <input matInput  type="number" formControlName="Position" [readonly]="!viewOpen" >
+                            </mat-form-field>
+                          </div>
+                          </div>
+                    </div>
+                    @if(viewOpen){
+                <div class="btn-box">
+                    <button
+                        mat-button
+                        (click)="toggleClose()"
+                        color="warn"
+                    >
+                        Cancel
+                    </button>
+                    <button mat-button color="primary"
+                    (click)="onSubmit(resourceForm)">
+                                         
+                        <i class="material-symbols-outlined">
+                            add
+                        </i>
+                        {{addnew ? 'Create' : 'Update'}} 
+                    </button>
+                </div>
+            }
+            </form>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

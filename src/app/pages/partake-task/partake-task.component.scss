@@ -1,0 +1,289 @@
+.native-date-input {
+    height: 42px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0 12px;
+    font-size: 14px;
+    width: 100%;
+    color: #212529;
+    background-color: #fff;
+    transition: border-color 0.2s;
+  
+    &:focus {
+      outline: none;
+      border-color: #86b7fe;
+      box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+    }
+  
+    &:disabled {
+      background-color: #e9ecef;
+      cursor: not-allowed;
+    }
+  }
+
+  // ── Form helpers ──────────────────────────────────────────────
+.field-label {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 4px;
+    display: block;
+  }
+  
+  .field-note {
+    font-size: 11px;
+    color: #999;
+    margin-bottom: 8px;
+  }
+  
+  .form-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  
+    h4 { margin: 0; }
+  }
+  
+  .icon-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  // ── Buttons ───────────────────────────────────────────────────
+  .buttonsset {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+  
+  // ── Submissions header ────────────────────────────────────────
+  .submissions-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  
+  // ── Summary cards ─────────────────────────────────────────────
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  .summary-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #ebebeb;
+  }
+  
+  .summary-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    &.total    { background: #e8eaf6; color: #3949ab; }
+    &.pending  { background: #fff3e0; color: #ef6c00; }
+    &.verified { background: #e8f5e9; color: #2e7d32; }
+    &.rejected { background: #ffebee; color: #c62828; }
+  
+    mat-icon { font-size: 20px; }
+  }
+  
+  .summary-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .summary-label {
+    font-size: 11px;
+    color: #888;
+  }
+  
+  .summary-value {
+    font-size: 22px;
+    font-weight: 600;
+    color: #222;
+  
+    &.pending-val  { color: #ef6c00; }
+    &.verified-val { color: #2e7d32; }
+    &.rejected-val { color: #c62828; }
+  }
+  
+  // ── Status tabs ───────────────────────────────────────────────
+  .status-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .tab-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #666;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  
+    &:hover { background: #f0f0f0; }
+    &.active { background: #534AB7; color: #fff; border-color: #534AB7; }
+  }
+  
+  // ── Submissions table ─────────────────────────────────────────
+  .submissions-table-wrap {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid #ebebeb;
+  }
+  
+  .submissions-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  
+    th {
+      padding: 10px 14px;
+      text-align: left;
+      color: #888;
+      font-weight: 500;
+      background: #fafafa;
+      border-bottom: 1px solid #ebebeb;
+    }
+  
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #f3f3f3;
+      vertical-align: middle;
+      color: #333;
+    }
+  
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafafe; }
+  }
+  
+  .empty-row {
+    text-align: center;
+    color: #aaa;
+    padding: 30px !important;
+  }
+  
+  // ── User cell ─────────────────────────────────────────────────
+  .user-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e8eaf6;
+    color: #3949ab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  
+  .user-name  { font-weight: 500; font-size: 13px; color: #222; }
+  .user-email { font-size: 11px; color: #888; }
+  
+  .date-cell { font-size: 12px; color: #888; white-space: nowrap; }
+  
+  // ── Media badge ───────────────────────────────────────────────
+  .media-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  
+    &.media-video { background: #e3f2fd; color: #1565c0; }
+    &.media-image { background: #e8f5e9; color: #2e7d32; }
+    &.media-audio { background: #fff3e0; color: #ef6c00; }
+  
+    .media-icon { font-size: 14px; height: 14px; width: 14px; }
+  }
+  
+  // ── Status badge ──────────────────────────────────────────────
+  .status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  
+    &.badge-active, &.badge-accepted { background: #e8f5e9; color: #2e7d32; }
+    &.badge-upcoming  { background: #e3f2fd; color: #1565c0; }
+    &.badge-completed { background: #ede7f6; color: #4527a0; }
+    &.badge-pending   { background: #fff3e0; color: #ef6c00; }
+    &.badge-verified  { background: #e0f7fa; color: #00695c; }
+    &.badge-rejected  { background: #ffebee; color: #c62828; }
+  }
+  
+  // ── Submission action buttons ─────────────────────────────────
+  .action-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  %action-base {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  
+    mat-icon { font-size: 14px; height: 14px; width: 14px; }
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+  }
+  
+  .action-verify {
+    @extend %action-base;
+    background: #e0f7fa;
+    color: #00695c;
+    &:not(:disabled):hover { background: #b2ebf2; }
+  }
+  
+  .action-accept {
+    @extend %action-base;
+    background: #e8f5e9;
+    color: #2e7d32;
+    &:not(:disabled):hover { background: #c8e6c9; }
+  }
+  
+  .action-reject {
+    @extend %action-base;
+    background: #ffebee;
+    color: #c62828;
+    &:not(:disabled):hover { background: #ffcdd2; }
+  }

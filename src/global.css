@@ -1,0 +1,48 @@
+.submitbtn{
+    height: auto;
+    min-width: auto;
+    font-weight: 500;
+    margin-right: 15px;
+    border-radius: 7px;
+    border-color:var(--primaryColor) ;
+    padding: 14px 26.5px;
+    display: inline-block;
+    color: var(--whiteColor);
+    background-color: var(--primaryColor);
+}
+.cacelbutton{
+    color: white;
+    background-color: #dc3545;
+    border: 1px solid transparent;  
+    &:hover{
+        background-color: white;
+        color: #dc3545;
+        border-color: #dc3545;
+    }
+}
+.addbutton{
+   background:var(--primaryColor);
+   color: #fff;
+    border: 1px solid transparent;
+    &:hover{
+        background-color: white;
+        color:var(--primaryColor);
+        border-color:var(--primaryColor);
+    }
+}
+.submitbutton{
+   background:var(--primaryColor);
+   color: #fff;
+    border: 1px solid transparent;
+    &:hover{
+        background-color: white;
+        color:var(--primaryColor);
+        border-color:var(--primaryColor);
+    }
+}
+.buttonsset{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 14px;
+}

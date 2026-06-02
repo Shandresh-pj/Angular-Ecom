@@ -1,0 +1,97 @@
+
+            <form [formGroup]="UsersForm">
+                <div class="row">
+                     <h4 style="margin-bottom: 15px;">Setting</h4>
+                    <mat-form-field [hidden]="true">
+                        <input matInput placeholder=""formControlName="Id"type="text"/>
+                    </mat-form-field>
+
+                    <div class="col-md-6 mt-4">
+                        <div class="form-group">
+                            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                                <mat-label>Email</mat-label>
+                                <input matInput placeholder=""formControlName="Email"type="text"/>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mt-4">
+                        <div class="form-group">
+                            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                                <mat-label> Mobile</mat-label>
+                                <input matInput placeholder="" maxlength="10" (keypress)="numericOnly($event)" formControlName="MobileNumber"type="text"/>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mt-4">
+                        <div class="form-group">
+                            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                                <mat-label>Address</mat-label>
+                                <input matInput formControlName="Address"type="text"/>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-4">
+                        <div class="form-group">
+                           <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                                <mat-label>Facebook Link</mat-label>
+                                <input matInput placeholder=""formControlName="Facebook"type="text"/>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-4">
+                        <div class="form-group">
+                            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                                <mat-label>Twitter Link</mat-label>
+                                <input matInput placeholder=""formControlName="Twitter"type="text"/>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    
+                     <div class="col-md-6 mt-4">
+                        <div class="form-group">
+                            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                                <mat-label>Gplus Link</mat-label>
+                                <input matInput placeholder=""formControlName="Gplus"type="text"/>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mt-4">
+                        <div class="form-group">
+                            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                                <mat-label>Meta Keywords</mat-label>
+                                <input matInput formControlName="MetaKeywords"type="text"/>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mt-4">
+                        <div class="form-group">
+                            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                                <mat-label>Meta Description</mat-label>
+                                <input matInput formControlName="MetaDescription"type="text"/>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-3">
+                        <div class="buttonsset">
+                            <button type="button"class="btn mt-1 cacelbutton"style="width: 100px"(click)="closeUsersForm()">
+                                Cancel
+                            </button>
+                            @if (formMode !== "view") {
+                            <button type="button"
+        class="btn mt-1 submitbutton"
+        style="width: 100px"
+        (click)="SubmitUsersForm()">
+  Submit
+</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+

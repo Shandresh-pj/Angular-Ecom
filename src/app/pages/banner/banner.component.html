@@ -1,0 +1,100 @@
+<mat-card
+    class="apps-to-do-list-card table-style-two mb-25 border-radius d-block bg-white border-0 shadow-none"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+>
+    <div class="mt-3">
+        @if (!showBannerForm) {
+            <app-mat-table
+                #mattablechild
+                URL="Banner/All"
+                [action]="action"
+                [filterOptions]="['All']"
+                [customParams]="{ CompanyCode: companycode , Type: bannersurl ? 'WEB' : 'APP'}"
+                [columns]="columns"
+                (add)="Toggleclass($event, 'add')"
+                (view)="Toggleclass($event, 'view')"
+                (edit)="Toggleclass($event, 'edit')"
+                [addedName]="bannersurl ? 'Banner' : 'App Slider'"
+            ></app-mat-table>
+        } @else {
+            <div class="row">
+                <div class="col-12">
+                    <div class="box box-success siteLogo">
+                        <div class="box-body">
+                            <h4 style="margin-bottom: 15px">
+                                {{ formMode === 'add' ? 'Add' : formMode ==='edit' ? 'Edit' : 'View' }} {{bannersurl ? 'Banner' : 'App Slider'}}
+                            </h4>
+                            <form [formGroup]="bannerForm">
+                                <div class="row mt-2">
+                                    <mat-form-field [hidden]="true">
+                                        <input
+                                            matInput
+                                            placeholder=""
+                                            formControlName="Id"
+                                            type="text"
+                                        />
+                                    </mat-form-field>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <mat-form-field  [appearance]="formFieldAppearance"  class="w-100">
+                                                <mat-label> Title</mat-label>
+                                                <input
+                                                    matInput
+                                                    placeholder=""
+                                                    formControlName="Title"
+                                                    type="text"
+                                                />
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 mt-3 mb-3">
+                                        <div class="form-group">
+                                            <app-quill
+                                                [description]="bannerForm.get('Description')?.value"
+                                               [Mode]="formMode"
+                                                (descriptionChange)="updateDescription($event)"
+                                            ></app-quill>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 mt-3">
+                                        <app-fileupload [filedname]="sendimgname" 
+                                        [previewUrls]="Bannerurls"
+                                        [Mode]="formMode"
+                                         (ImageEmitValue)="onImageReceived($event)" 
+                                         (deleteImage)="onDeleteImage($event)"
+                                         ></app-fileupload>
+                                    </div>
+                                    <div class="col-md-12 mt-3">
+                                        <div class="buttonsset">
+                                            <button
+                                                type="button"
+                                                class="btn mt-1 cacelbutton"
+                                                style="width: 100px"
+                                                (click)="closeBannerForm()"
+                                            >
+                                                Cancel
+                                            </button>
+                                            @if (formMode !== "view") {
+                                                <button
+                                                    type="button"
+                                                    class="btn mt-1 submitbutton"
+                                                    style="width: 100px"
+                                                    (click)="SubmitBannerForm(bannerForm)"
+                                                >
+                                                    Submit
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</mat-card>

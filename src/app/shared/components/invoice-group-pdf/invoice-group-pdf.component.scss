@@ -1,0 +1,108 @@
+.mat-mdc-table.mdc-data-table__table .mat-mdc-header-row .mat-mdc-header-cell {
+    border: 0;
+    font-weight: 500;
+    text-align: center;
+    padding: 10px 6px !important;
+     white-space: wrap;
+    background-color: #f6f7f9;
+}
+.mat-mdc-table.mdc-data-table__table .mat-mdc-row .mat-mdc-cell{
+    padding: 10px 6px !important;
+    text-align: center;
+}
+// .editableTable mat-select{
+//     width: 150px !important; 
+//     border: 1px solid #dcdcdd;  
+//     padding: 11px 16px 12px;
+//     border-radius: 7px;
+//     display: block;
+
+// }
+.editableTable input{
+    background-color:transparent;
+    min-width: 30px;
+    padding:2px;
+   
+
+}
+.editableTable mat-form-field{
+    height: 45px;
+    width: 132px;
+}
+::ng-deep .mdc-text-field {
+    padding: 0 10px !important;
+  }
+
+  .select-all{
+    margin: 5px 9px;
+    text-transform: uppercase;
+  } 
+
+.btn{
+    width: 100%;
+    height: auto;
+    display: block;
+    min-width: auto;
+    margin-top: 25px;
+    padding: 12px 25px;
+    border-radius: 7px;
+    color: var(--whiteColor);
+    background-color: var(--primaryColor);
+    font-size: 16px;
+    font-weight: 500;
+    border:1px solid var(--primaryColor);
+    } 
+   
+  
+.editableTable .mat-mdc-header-cell {
+    padding-top:7px;
+    padding-bottom:7px;
+    background-color: #f5f5f5; /* Set header background color */
+    position: sticky;    /* Sticky positioning */
+    top: 0;              /* Stick to the top */
+    z-index: 1;          /* Ensure it stays on top of table rows */
+  }
+
+
+
+.editableTable {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+    height: 400px;
+    width: 100%;
+    &::-webkit-scrollbar {
+        -webkit-appearance: none;
+
+        &:vertical {
+            width: 6px;
+        }
+        &:horizontal {
+            height: 6px;
+        }
+    }
+    &::-webkit-scrollbar-thumb {
+        cursor: pointer;
+        border-radius: 7px;
+        background-color: var(--blackColor);
+    }
+    &::-webkit-scrollbar-track {
+        border-radius: 7px;
+        background-color: #F6F7F9;
+    }
+}
+.mat-mdc-table-sticky-border-elem-right {
+    border-left: 1px dashed var(--borderColor);
+}
+.mat-mdc-table-sticky-border-elem-left {
+    border-right: 1px dashed var(--borderColor);
+}
+.component-dark-theme {
+    &.example-container {
+        &::-webkit-scrollbar-thumb {
+            background-color: #0A0E19;
+        }
+        &::-webkit-scrollbar-track {
+            background-color: #15203c;
+        }
+    }
+}

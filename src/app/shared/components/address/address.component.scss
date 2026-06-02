@@ -1,0 +1,19 @@
+google-location-field {
+    app-google-places-autocomplete {
+      width: 220px !important;
+      display: block;
+      
+      .mat-mdc-form-field {
+        width: 100% !important;
+        
+        .mat-mdc-text-field-wrapper {
+          width: 100% !important;
+        }
+        
+        .mat-mdc-input-element {
+          width: 100% !important;
+          padding: 3px !important;
+        }
+      }
+    }
+  }

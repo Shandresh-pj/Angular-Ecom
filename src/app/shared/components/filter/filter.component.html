@@ -1,0 +1,48 @@
+<form [formGroup]="filterForm">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <mat-form-field class="example-full-width">
+            <mat-label>Filter Name</mat-label>
+            <input
+              type="text"
+              matInput
+              (click)="onInputSearchClick($event)"
+              formControlName="filterControl"
+              [matAutocomplete]="auto"
+            />
+            @if (showfilterInputDeleteIcon) {
+              <mat-icon
+                matSuffix
+                class="darkcolorclear"
+                (click)="clearInput($event)"
+                style="cursor: pointer"
+                >clear</mat-icon>
+            }
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+              @for (option of filteredOptions | async; track option) {
+                <mat-option [value]="option">{{ option.name }}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </div>
+  
+      <div class="col-md-6 filterbottom">
+        <div class="form-group">
+          <mat-form-field>
+            <mat-label>Input Text</mat-label>
+            <input matInput formControlName="keyword" placeholder="" />
+            @if (showtextInputDeleteIcon) {
+              <mat-icon
+                matSuffix
+                class="darkcolorclear"
+                (click)="clearTextInput($event)"
+                style="cursor: pointer"
+                >clear</mat-icon>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+  </form>

@@ -1,0 +1,103 @@
+<mat-card class="apps-to-do-list-card table-style-two mb-25 border-radius d-block bg-white border-0 shadow-none"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()">
+    <div class="mt-3">
+        @if(!showVideoCategoryForm){
+        <app-mat-table #mattablechild URL="VideoCategory/All" [action]="action" [filterOptions]="['All']"
+            [columns]="columns" (add)="Toggleclass($event,'add')" (view)="Toggleclass($event,'view')"
+            (edit)="Toggleclass($event,'edit')" [addedName]="'Video Category'"></app-mat-table>
+        }@else{
+        <form [formGroup]="videoCategoryForm">
+            <div class="row">
+               <h4 style="margin-bottom: 15px;">{{ formMode === 'add' ? 'Add' : formMode === 'edit' ? 'Edit' : 'View' }} Video Category</h4>
+                <mat-form-field [hidden]="true">
+                    <input matInput placeholder="" formControlName="Id" type="text" />
+                </mat-form-field>
+
+         
+
+                <div class="col-md-6 mb-3">
+                    <div class="form-group">
+                        <mat-form-field [appearance]="formFieldAppearance">
+                            <mat-label>Status</mat-label>
+                               <mat-select formControlName="StatusId">
+                             @for(status of statuses ;track status){
+                        <mat-option [value]="status.Id">{{status.StatusCode}}</mat-option>
+                        }
+                      </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                 <div class="col-md-12 mb-3">
+                    <div class="form-group">
+                <mat-tab-group #revTabGroup class="tab-group" [(selectedIndex)]="selectedTab">
+                  <!-- <mat-tab label='Description'>
+                    <mat-tab-group> -->
+                      @for(lang of languages; track lang; let last = $last){
+                      <mat-tab [label]="lang.Name">
+                        <ng-template md-tab-label>
+                          {{lang.Name}}
+                        </ng-template>
+                        <section class="tab-container mt-4">
+                          @for(item of VideoCategoryTranslations().controls; track item;let i = $index){
+                          <div formArrayName="VideoCategoryTranslations">
+                            <div [formGroupName]="i" class="">
+                              @if(lang.Id==item.value['LanguageId']){
+                              <div>
+                                <mat-form-field [hidden]="true">
+                                  <input matInput formControlName="LanguageId"type="text"/>
+                                </mat-form-field>
+
+                                <div class="col-md-12 mb-3">
+                                  <mat-form-field class="w-100 border_input" [appearance]="formFieldAppearance">
+                                    <mat-label class="mb-0 ">Name</mat-label>
+                                    <input matInput  formControlName="Name"type="text"/>
+                                  </mat-form-field>
+                                  <!-- @if(isFieldValid(item, 'Name', 'required')){
+                                  <mat-error>Name is <strong>required</strong></mat-error>
+                                  } -->
+                                </div>
+
+                                <div class="col-md-12  mb-3">
+                                    <div class="form-group">
+                                      <mat-form-field class="w-100 border_input" [appearance]="formFieldAppearance">
+                                          <mat-label class="mb-0 text-uppercase">Description</mat-label>
+                                 <textarea multiline="true" [value]="catLanguage[lang.Id]?.Description"
+                                      matInput formControlName="Description" type="text"></textarea>
+                                    </mat-form-field> 
+                                </div>
+                                </div>
+                             
+                              </div>
+                              }
+                            </div>
+                          </div>
+                          }
+                        </section>
+                      </mat-tab>
+                      }
+                    <!-- </mat-tab-group> -->
+                  <!-- </mat-tab> -->
+                </mat-tab-group>
+                    </div></div>
+               
+
+                 <div class="col-md-12 mt-3">
+                    <div class="buttonsset">
+                   <button type="button" class="btn mt-1 cacelbutton" style="width: 100px;" (click)="closeCategoryForm()">
+                Cancel
+              </button>
+              @if(formMode !== 'view'){
+              <button type="button" class="btn mt-1 submitbutton"  style="width: 100px;" (click)="SubmitCategoryForm(videoCategoryForm)">
+                Submit
+              </button>
+            }
+                    </div>
+
+                 </div>
+
+            </div>
+        </form>
+        }
+    </div>
+</mat-card>

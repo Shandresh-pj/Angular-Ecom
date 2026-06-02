@@ -1,0 +1,9 @@
+<label class="description-label">{{ label }}</label>
+<quill-editor
+  [ngModel]="editorContent"
+  (onContentChanged)="onContentChange($event)"
+  [modules]="quillConfig"
+  [placeholder]="placeholder"
+  [readOnly]="isReadOnly"
+  style="display: block; width: 100%;">
+</quill-editor>

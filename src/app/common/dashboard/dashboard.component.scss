@@ -1,0 +1,99 @@
+ .admin-dashboard-couter-box {
+    border-radius: 12px;
+    padding: 15px;
+    border: 1px solid #e4e4e4;
+    background: #fff;
+    transition: 0.3s;
+    cursor: pointer;
+  }
+  .admin-dashboard-couter-box:hover {
+    background: var(--card-color);
+  }
+  .admin-dashboard-couter-box:hover .stat-title,
+  .admin-dashboard-couter-box:hover .admin-content-num,
+  .admin-dashboard-couter-box:hover .trend-label,
+  .admin-dashboard-couter-box:hover .trend-value,
+  .admin-dashboard-couter-box:hover .trend-arrow {
+    color: #fff !important;
+  }
+  .admin-dashboard-couter-box:hover svg path,
+  .admin-dashboard-couter-box:hover svg rect {
+    fill: #fff !important;
+  }
+  .admin-dashboard-couter-box:hover .admin-icons-1 {
+    background: rgba(255,255,255,0.2) !important;
+  }
+  .admin-dashboard-couter-box:hover .sparkline-line {
+    stroke: rgba(255,255,255,0.9) !important;
+  }
+  .admin-dashboard-couter-box:hover .sparkline-fill {
+    fill: rgba(255,255,255,0.2) !important;
+  }
+ 
+  /* ── ICON BOX ── */
+  .admin-icons-1 {
+    height: 52px;
+    width: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    transition: background 0.3s;
+  }
+  .admin-icons-1 svg {
+    height: 26px !important;
+    width: 26px !important;
+  }
+ 
+  /* ── CARD CONTENT ── */
+  .card-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .admin-content-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: #182a3c;
+    line-height: 1;
+    margin: 0;
+    transition: color 0.3s;
+  }
+  .stat-title {
+    font-size: 13px;
+    color: #8a94a6;
+    font-weight: 500;
+    margin: 0 0 6px;
+    transition: color 0.3s;
+  }
+  .trend-row {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-bottom: 8px;
+  }
+  .trend-arrow {
+    font-size: 13px;
+    font-weight: 700;
+    color: #07AA83;
+    transition: color 0.3s;
+  }
+  .trend-label {
+    font-size: 12px;
+    color: #8a94a6;
+    transition: color 0.3s;
+  }
+  .trend-value {
+    font-size: 12px;
+    font-weight: 700;
+    color: #182a3c;
+    transition: color 0.3s;
+  }
+ 
+  /* ── SPARKLINE ── */
+  .sparkline-wrap svg {
+    width: 100% !important;
+    height: 38px !important;
+    display: block;
+  }

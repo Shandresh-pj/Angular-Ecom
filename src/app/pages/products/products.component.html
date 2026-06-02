@@ -1,0 +1,320 @@
+<mat-card class="apps-to-do-list-card table-style-two mb-25 border-radius d-block bg-white border-0 shadow-none"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()">
+    <div class="mt-3">
+        @if(!showProductsForm){
+        <app-mat-table #mattablechild URL="products" [action]="action" [filterOptions]="['All']"
+            [columns]="columns" (add)="Toggleclass($event,'add')" (view)="Toggleclass($event,'view')"
+            (edit)="Toggleclass($event,'edit')" (delete)="onDelete($event)" [addedName]="'Product'">
+        </app-mat-table>
+        }@else{
+        <form [formGroup]="productsForm">
+            <div class="row">
+                <h4 style="margin-bottom: 15px;">
+                    {{ formMode === 'add' ? 'Add' : formMode === 'edit' ? 'Edit' : 'View' }} Product
+                </h4>
+
+                <!-- Hidden Id -->
+                <mat-form-field [hidden]="true">
+                    <input matInput placeholder="" formControlName="Id" type="text" />
+                </mat-form-field>
+
+                <!-- Product SKU -->
+                <div class="col-md-4 mb-3">
+                    <div class="form-group">
+                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                            <mat-label>Product SKU</mat-label>
+                            <input matInput placeholder="" formControlName="Code" type="text" />
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <!-- Reseller Name -->
+                <div class="col-md-4 mb-3">
+                    <div class="form-group">
+                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                            <mat-label>Reseller Name</mat-label>
+                            <mat-select formControlName="ResellerId">
+                                @for(sel of getresellers; track sel){
+                                <mat-option [value]="sel.Id">{{sel?.FirstName}} {{sel?.LastName}}</mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <!-- Category -->
+                <div class="col-md-4 mb-3">
+                    <div class="form-group">
+                        <mat-form-field [appearance]="formFieldAppearance">
+                            <mat-label>Category</mat-label>
+                            <mat-select formControlName="CategoryIds" multiple>
+                                @for(cat of category; track cat){
+                                <mat-option [value]="cat.Id">{{cat?.Name}}</mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <!-- Product Type -->
+                <div class="col-md-4 mb-3">
+                    <div class="form-group">
+                        <mat-form-field [appearance]="formFieldAppearance">
+                            <mat-label>Product Type</mat-label>
+                            <mat-select formControlName="ProductType" (selectionChange)="productType($event.value)">
+                                <mat-option value='Single'>Single</mat-option>
+                                <mat-option value='Variant'>Variant</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <!-- Points -->
+                <div class="col-md-4 mb-3">
+                    <div class="form-group">
+                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                            <mat-label>Points</mat-label>
+                            <input matInput placeholder="" (keypress)="numericOnly($event)"
+                                formControlName="Points" type="text" />
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <!-- IsAllow Negative Stock -->
+                <div class="col-md-4 mb-3">
+                    <div class="form-group">
+                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                            <mat-label>IsAllow Negative Stock</mat-label>
+                            <mat-select formControlName="IsAllowNegativeStock">
+                                <mat-option [value]="true">Yes</mat-option>
+                                <mat-option [value]="false">No</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <!-- Stock In Hand -->
+                <div class="col-md-4 mb-3">
+                    <div class="form-group">
+                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                            <mat-label>Stock In Hand</mat-label>
+                            <input matInput placeholder="" formControlName="StockInHand" type="text"
+                                (keypress)="numericOnly($event)" />
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <!-- Tabs: Description | Product Images | Product Variants -->
+                <div class="col-md-12 mb-3">
+                    <div class="form-group">
+                        <mat-tab-group #revTabGroup class="tab-group" [(selectedIndex)]="selectedTab">
+
+                            <!-- ── Description Tab ── -->
+                            <mat-tab label='Description'>
+                                <mat-tab-group>
+                                    @for(lang of languages; track lang; let last = $last){
+                                    <mat-tab [label]="lang.Name">
+                                        <section class="tab-container mt-4">
+                                            @for(item of ProductTranslations().controls; track item; let i = $index){
+                                            <div formArrayName="ProductTranslations">
+                                                <div [formGroupName]="i" class="">
+                                                    @if(lang.Id == item.value['LanguageId']){
+                                                    <div>
+                                                        <mat-form-field [hidden]="true">
+                                                            <input matInput formControlName="LanguageId" type="text" />
+                                                        </mat-form-field>
+
+                                                        <div class="col-md-12 mb-3">
+                                                            <mat-form-field class="w-100 border_input"
+                                                                [appearance]="formFieldAppearance">
+                                                                <mat-label class="mb-0">Name</mat-label>
+                                                                <input matInput formControlName="Name" type="text" />
+                                                            </mat-form-field>
+                                                        </div>
+
+                                                        <div class="col-md-12 mb-3">
+                                                            <div class="form-group">
+                                                                <app-quill
+                                                                    [description]="item.get('Description')?.value"
+                                                                    [Mode]="formMode"
+                                                                    (descriptionChange)="updateDescription($event, i)">
+                                                                </app-quill>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                            }
+                                        </section>
+                                    </mat-tab>
+                                    }
+                                </mat-tab-group>
+                            </mat-tab>
+
+                            <!-- ── Product Images Tab ── -->
+                            <mat-tab label='Product Images'>
+                                <div class="row mt-3">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-10">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="border-dased">
+                                                    <input type="file" class="file-input"
+                                                        (change)="ProductdetectFiles($event)" #fileUpload />
+                                                    <div class="file-upload">
+                                                        <div class="upload-area">
+                                                            <div class="upload-text mt-4">Click to Upload Images</div>
+                                                            <button class="upload-btn mb-3"
+                                                                (click)="fileUpload.click()"
+                                                                [disabled]="formMode == 'view'">
+                                                                <span class="icon-wrapper">Upload a file</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @for(url of producturls; track url){
+                                            <div class="col-12 col-md-4 mt-3">
+                                                <div class="image-preview">
+                                                    @if(formMode !== 'view'){
+                                                    <button type="button" class="delete-btn"
+                                                        (click)="deleteproductImage(url)">
+                                                        <mat-icon class="matdeleteicon">delete</mat-icon>
+                                                    </button>
+                                                    }
+                                                    <img crossorigin="anonymous" [src]="url" alt="preview" />
+                                                </div>
+                                            </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                            </mat-tab>
+
+                            <!-- ── Product Variants Tab (only when ProductType === 'Variant') ── -->
+                            @if(productsForm.value?.ProductType == 'Variant'){
+                            <mat-tab label='Product Variants'>
+                                <div formArrayName="ProductVariants" class="mt-3">
+
+                                    @for(item of ProductVariants().controls; track item; let i = $index){
+
+                                    <!-- Skip rows marked for deletion -->
+                                    @if(item.value?.Flag !== 'D'){
+                                    <div [formGroupName]="i">
+                                        <div class="row">
+
+                                            <!-- Product Attribute -->
+                                            <div class="col-md-4 mt-3">
+                                                <mat-form-field class="w-100 border_input"
+                                                    [appearance]="formFieldAppearance">
+                                                    <mat-label class="mb-0">Product Attribute</mat-label>
+                                                    <mat-select formControlName="ProductAttributeId"
+                                                        (selectionChange)="Attributeselectvalue($event.value, i)">
+                                                        <!--
+                                                            FIX: pass row index `i` so each row
+                                                            fetches its own attribute-value list
+                                                        -->
+                                                        @for(attr of productattribute; track attr){
+                                                        <mat-option [value]="attr?.Id">{{attr?.Name}}</mat-option>
+                                                        }
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+
+                                            <!-- Product Attribute Value -->
+                                            <div class="col-md-4 mt-3">
+                                                <mat-form-field class="w-100 border_input"
+                                                    [appearance]="formFieldAppearance">
+                                                    <mat-label class="mb-0">Product Attribute Value</mat-label>
+                                                    <mat-select formControlName="ProductAttributeValueId">
+                                                        <!--
+                                                            FIX: use per-row map getproductattributevalues[i]
+                                                            instead of the old shared getproductattrivalue
+                                                        -->
+                                                        @for(attrval of getproductattributevalues[i]; track attrval){
+                                                        <mat-option [value]="attrval?.Id">{{attrval?.Name}}</mat-option>
+                                                        }
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+
+                                            <!-- Points -->
+                                            <div class="col-md-4 mt-3">
+                                                <mat-form-field class="w-100 border_input"
+                                                    [appearance]="formFieldAppearance">
+                                                    <mat-label class="mb-0">Points</mat-label>
+                                                    <input matInput type="text" formControlName="Price">
+                                                </mat-form-field>
+                                            </div>
+
+                                            <!-- Product Variant Code -->
+                                            <div class="col-md-4 mt-3">
+                                                <mat-form-field class="w-100 border_input"
+                                                    [appearance]="formFieldAppearance">
+                                                    <mat-label class="mb-0">Product Variant Code</mat-label>
+                                                    <input matInput type="text" formControlName="ProductVariantCode">
+                                                    @if(isFieldValid(productsForm, 'ProductVariantCode', 'required')){
+                                                    <mat-error>
+                                                        ProductVariantCode is <strong>required</strong>
+                                                    </mat-error>
+                                                    }
+                                                </mat-form-field>
+                                            </div>
+
+                                            <!-- Stock -->
+                                            <div class="col-md-4 mt-3">
+                                                <mat-form-field class="w-100 border_input"
+                                                    [appearance]="formFieldAppearance">
+                                                    <mat-label class="mb-0">Stock</mat-label>
+                                                    <input matInput type="text" formControlName="Stock">
+                                                </mat-form-field>
+                                            </div>
+
+                                            <!-- Add / Remove buttons (hidden in view mode) -->
+                                            @if(formMode !== 'view'){
+                                            <div class="col-md-4 mt-3 d-flex align-items-center">
+                                                <div class="d-flex align-items-center gap-2 mt-1">
+                                                    <button class="btn mt-1 submitbutton"
+                                                        style="width: 60px; padding: 5px;"
+                                                        (click)="addVarients()">Add</button>
+                                                    <button class="btn mt-1 cacelbutton"
+                                                        style="width: 75px; padding: 5px;"
+                                                        (click)="RemoveVarients(i)">Remove</button>
+                                                </div>
+                                            </div>
+                                            }
+
+                                        </div>
+                                    </div>
+                                    }<!-- end @if Flag !== 'D' -->
+
+                                    }<!-- end @for variants -->
+                                </div>
+                            </mat-tab>
+                            }<!-- end @if Variant -->
+
+                        </mat-tab-group>
+                    </div>
+                </div>
+
+                <!-- Submit / Cancel -->
+                <div class="col-md-12 mt-3">
+                    <div class="buttonsset">
+                        <button type="button" class="btn mt-1 cacelbutton" style="width: 100px;"
+                            (click)="closeProductForm()">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn mt-1 submitbutton" style="width: 100px;"
+                            (click)="SubmitProductForm(productsForm)">
+                            Submit
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+        }
+    </div>
+</mat-card>

@@ -1,0 +1,27 @@
+ .mat-mdc-button {
+            height: auto;
+            min-width: auto;
+            font-weight: 500;
+            border-radius: 7px;
+            padding: 10.5px 15px;
+            color: var(--primaryColor);
+            background-color: transparent;
+            border: 1px solid var(--primaryColor);
+            transition: all 0.3s ease-in-out; 
+
+            // Hover and active states
+            &:hover {
+                color: var(--whiteColor);
+                background-color: var(--primaryColor);
+                transform: translateY(-3px); // Slight lift effect
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); // Soft shadow effect
+            }
+
+          
+        }
+
+.mat-mdc-button.mat-warn {
+    color: var(--whiteColor);
+    background-color: var(--dangerColor);
+    border: none !important;
+}

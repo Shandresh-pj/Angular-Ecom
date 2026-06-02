@@ -1,0 +1,100 @@
+<div class="row" [formGroup]="BillingForm">
+    <h5 >
+        Billing Details
+    </h5>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <label
+                class="main-label d-block fw-medium text-black"
+            >
+                Billing Cycle
+            </label>
+            <mat-form-field>
+                <mat-label> Billing Cycle </mat-label>
+                    <mat-select formControlName="BillingCycle">
+                              <mat-option value="immediate">Immediate </mat-option>
+                              <mat-option value="weekly">Weekly </mat-option>
+                              <mat-option value="fortnightly">Fortnightly</mat-option>
+                              <mat-option value="monthly">Monthly</mat-option>
+                            </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <label
+                class="main-label d-block fw-medium text-black"
+            >
+               {{userDetails?.Company?.CompanyType == "Customer" ? "Contact Name" : "Billing Name"}}
+            </label>
+            <mat-form-field>
+                <mat-label> {{userDetails?.Company?.CompanyType == "Customer" ? "Contact Name" : "Billing Name"}} </mat-label>
+
+                <input
+                    matInput
+                    formControlName="BillingName"
+                    
+                />
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <label
+                class="main-label d-block fw-medium text-black"
+            >
+               {{userDetails?.Company?.CompanyType == "Customer" ? "Contact Mobile" : "Billing Mobile"}}
+            </label>
+            <mat-form-field>
+                <mat-label>{{userDetails?.Company?.CompanyType == "Customer" ? "Contact Mobile" : "Billing Mobile"}} </mat-label>
+
+                <input
+                    matInput
+                    formControlName="BillingMobile"
+                    maxlength="10" (keypress)="numericOnly($event)"
+                     class="uppercase"
+                />
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <label
+                class="main-label d-block fw-medium text-black"
+            >
+               {{userDetails?.Company?.CompanyType == "Customer" ? "Contact Email" : "Billing Email"}}
+            </label>
+            <mat-form-field>
+                <mat-label> {{userDetails?.Company?.CompanyType == "Customer" ? "Contact Email" : "Billing Email"}} </mat-label>
+
+                 <mat-chip-grid #chipGrid aria-label="Email selection"   [disabled]="isUploadDisabled">
+                                        @for(email of emails;track $index){
+                                        <mat-chip-row (removed)="removeEmail(email)">
+                                          {{ email }}
+                                          <button matChipRemove>
+                                            <mat-icon>cancel</mat-icon>
+                                          </button>
+                                        </mat-chip-row>
+                                    }
+                                        <!-- [readonly]="!viewOpen" -->
+                                          <!-- formControlName="BillingEmail" -->
+
+                                        <input
+                                        type="email"
+                                          placeholder="Add email..."
+                                          [matChipInputFor]="chipGrid"
+                                          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                          (matChipInputTokenEnd)="addEmail($event)"
+                                          (blur)="onBlur($event)"
+                                        />
+                                      </mat-chip-grid>
+            </mat-form-field>
+        </div>
+    </div>
+
+
+</div>

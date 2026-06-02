@@ -1,0 +1,221 @@
+<mat-card
+  class="apps-to-do-list-card table-style-two mb-25 border-radius d-block bg-white border-0 shadow-none"
+  [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+>
+  <div class="mt-3">
+
+    <!-- ═══════════════════════════════════════════
+         TABLE VIEW
+    ═══════════════════════════════════════════ -->
+    @if (!showUsersForm) {
+      <app-mat-table
+        #mattablechild
+        URL="User/All"
+        [action]="action"
+        [filterOptions]="['All']"
+        [columns]="columns"
+        [customParams]="{ UserType: userType }"
+        (add)="Toggleclass($event, 'add')"
+        (view)="Toggleclass($event, 'view')"
+        (edit)="Toggleclass($event, 'edit')"
+        (delete)="onDelete($event)"
+        [addedName]="pageLabel"
+      ></app-mat-table>
+    }
+
+    <!-- ═══════════════════════════════════════════
+         FORM VIEW
+    ═══════════════════════════════════════════ -->
+    @if (showUsersForm) {
+      <form [formGroup]="UsersForm">
+        <div class="row">
+
+          <h4 style="margin-bottom: 15px;">{{ formTitle }}</h4>
+
+          <!-- Hidden ID -->
+          <mat-form-field [hidden]="true">
+            <input matInput formControlName="Id" type="text" />
+          </mat-form-field>
+
+          <!-- First Name -->
+          <div class="col-md-6">
+            <div class="form-group">
+              <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="FirstName" type="text" />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Last Name -->
+          <div class="col-md-6">
+            <div class="form-group">
+              <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="LastName" type="text" />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Mobile -->
+          <div class="col-md-6 mt-4">
+            <div class="form-group">
+              <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                <mat-label>Mobile</mat-label>
+                <input
+                  matInput
+                  maxlength="10"
+                  (keypress)="numericOnly($event)"
+                  formControlName="MobileNumber"
+                  type="text"
+                />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="col-md-6 mt-4">
+            <div class="form-group">
+              <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="Email" type="email" />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Password — add mode only -->
+          @if (formMode === 'add') {
+            <div class="col-md-6 mt-4">
+              <div class="form-group">
+                <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                  <mat-label>Password</mat-label>
+                  <input matInput formControlName="Password" type="password" />
+                </mat-form-field>
+              </div>
+            </div>
+          }
+
+          <!-- Referral Code (Dealer / Reseller / Student) -->
+          @if (typeConfig.showReferralCode) {
+            <div class="col-md-6 mt-4">
+              <div class="form-group">
+                <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                  <mat-label>Referral Code</mat-label>
+                  <input matInput maxlength="10" formControlName="ReferralCode" type="text" />
+                </mat-form-field>
+              </div>
+            </div>
+          }
+
+          <!-- Aadhar No (Admin / Dealer / Reseller) -->
+          @if (typeConfig.showAadhar) {
+            <div class="col-md-6 mt-4">
+              <div class="form-group">
+                <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                  <mat-label>Aadhar No</mat-label>
+                  <input
+                    matInput
+                    maxlength="12"
+                    (keypress)="numericOnly($event)"
+                    formControlName="AadharNumber"
+                    type="text"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          }
+
+          <!-- Address (Admin / Dealer / Reseller / Advertiser) -->
+          @if (typeConfig.showAddress) {
+            <div class="col-md-6 mt-4">
+              <div class="form-group">
+                <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                  <mat-label>Address</mat-label>
+                  <input matInput formControlName="Address" type="text" />
+                </mat-form-field>
+              </div>
+            </div>
+          }
+
+          <!-- Date of Birth (Student) -->
+          @if (typeConfig.showDOB) {
+            <!-- <div class="col-md-6 mt-4">
+              <div class="form-group">
+                <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                  <mat-label>Date of Birth</mat-label>
+                  <input matInput formControlName="DOB" type="date" />
+                </mat-form-field>
+              </div>
+            </div> -->
+            <div class="col-md-6 mt-3">
+              <div class="form-group">
+                <label class="field-label">Date of Birth &amp; Time *</label>
+                <input
+                  class="native-date-input"
+                  type="date"
+                  formControlName="DOB"
+                  [disabled]="formMode === 'view'" />
+              </div>
+            </div>
+          }
+
+          <!-- Gender (Student) -->
+          @if (typeConfig.showGender) {
+            <div class="col-md-6 mt-4">
+              <div class="form-group">
+                <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                  <mat-label>Gender</mat-label>
+                  <mat-select formControlName="Gender">
+                    <mat-option value="Male">Male</mat-option>
+                    <mat-option value="Female">Female</mat-option>
+                    <mat-option value="Other">Other</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+          }
+
+          <!-- Status -->
+          <div class="col-md-6 mt-4">
+            <div class="form-group">
+              <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                <mat-label>Status</mat-label>
+                <mat-select formControlName="StatusId">
+                  @for (status of statuses; track status) {
+                    <mat-option [value]="status.Id">{{ status.StatusCode }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-md-12 mt-3">
+            <div class="buttonsset">
+              <button
+                type="button"
+                class="btn mt-1 cacelbutton"
+                style="width: 100px"
+                (click)="closeUsersForm()"
+              >
+                Cancel
+              </button>
+              @if (formMode !== 'view') {
+                <button
+                  type="button"
+                  class="btn mt-1 submitbutton"
+                  style="width: 100px"
+                  (click)="SubmitUsersForm(UsersForm)"
+                >
+                  Submit
+                </button>
+              }
+            </div>
+          </div>
+
+        </div>
+      </form>
+    }
+
+  </div>
+</mat-card>

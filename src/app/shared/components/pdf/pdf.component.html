@@ -1,0 +1,38 @@
+<div class="row">
+    <div class="col-md-4 d-flex justify-content-center align-items-center mb-2">
+        <button style="background-color: #FFA500;; color: white;"
+        type="button"
+        mat-button
+        color="primary"
+        [disabled]="isGeneratingPDF || !data"
+        (click)="generatePDF()"
+    >
+    {{ isGeneratingPDF ? 'Generating...' : 'Print' }}
+      
+    </button>
+    </div>
+    <div class="col-md-4 d-flex justify-content-center align-items-center mb-2">
+        <button style="background-color: #0fb970; color: white;"
+        type="button"
+        mat-button
+        color="primary"
+        [disabled]="isGeneratingPDF1 || !data"
+        (click)="PlankgeneratePDF()"
+    >
+    {{ isGeneratingPDF1 ? 'Generating...' : ' Blank Print' }}
+    
+    </button>
+    </div>
+    <div class="col-md-4 d-flex justify-content-center align-items-center mb-2">
+        <button style="background-color: #00BFFD; color: white;"
+        type="button"
+        mat-button
+        color="primary"
+        [disabled]="isPlacardGenerating || !data"
+        (click)="downloadDocument()"
+    >
+    {{ isPlacardGenerating ? 'Generating...' : 'Placard' }}
+      
+    </button>
+    </div>
+</div>

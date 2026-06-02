@@ -1,0 +1,110 @@
+<div class="row" [formGroup]="addressForm">
+    <h5 >
+        Address Details
+    </h5>
+ 
+ 
+  
+    <div class="col-md-3">
+        <div class="form-group">
+            <label class="main-label d-block fw-medium text-black">
+                Address 
+            </label>
+            <mat-form-field>
+                <mat-label> Address </mat-label>
+                <input matInput formControlName="AddressLine_2" />
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <label class="main-label d-block fw-medium text-black">
+                State
+            </label>
+
+            <CT-searchable-autocomplete
+            controlName="State"
+            [options]="states"
+            label="State"
+            [LabelValue]='{Value:"Name",Label:"Name"}'
+            >
+        </CT-searchable-autocomplete>
+        </div>
+    </div>
+
+
+    
+    <div class="col-md-3">
+        <div class="form-group">
+            <label class="main-label d-block fw-medium text-black">
+                City
+            </label>
+            <CT-searchable-autocomplete
+            controlName="City"
+            [options]="City"
+            [LabelValue]='{Value:"Name",Label:"Name"}'
+            label="City">
+        </CT-searchable-autocomplete>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <label class="main-label d-block fw-medium text-black">
+                Pincode
+            </label>
+            <mat-form-field>
+                <mat-label> Pincode </mat-label>
+                <input 
+                matInput 
+                formControlName="Pincode" 
+                type="text" 
+                maxlength="7" 
+                pattern="^[0-9]*$" 
+                placeholder="Enter Pincode"
+                (keypress)="numericOnly($event)"
+              />
+              
+
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="col-md-12 google-location-field">
+        <div class="form-group p-0">
+            <label class="main-label d-block fw-medium text-black">
+               Google Location
+            </label>
+            <app-google-places-autocomplete 
+                controlName="AddressLine_1" 
+                label="Google Location" 
+                (placeChanged)="handlePlaceChanged($event)">
+            </app-google-places-autocomplete>
+        </div>
+    </div>
+  
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="main-label d-block fw-medium text-black">
+                Latitude
+            </label>
+            <mat-form-field>
+                <mat-label> Latitude </mat-label>
+                <input matInput formControlName="Latitude" (keypress)="numericOnly($event)" />
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="main-label d-block fw-medium text-black">
+                Longitude
+            </label>
+            <mat-form-field>
+                <mat-label> Longitude </mat-label>
+                <input matInput formControlName="Longitude" (keypress)="numericOnly($event)"/>
+            </mat-form-field>
+        </div>
+    </div>
+</div>
+

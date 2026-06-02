@@ -1,0 +1,791 @@
+.sign-in-area {
+    background-color: var(--whiteColor);
+    padding: {
+        top: 100px;
+        bottom: 135px;
+    };
+    &.dark-theme {
+        background-color: #0A0E19;
+    }
+}
+
+
+// .ng-otp-input-wrapper[_ngcontent-ng-c1830579925] .otp-input[_ngcontent-ng-c1830579925]{
+// // margin: 4px !important;
+// }
+
+.ap-content{
+padding-left: 10px;
+}
+.otp-input[_ngcontent-ng-c1830579925] {
+    width: 50px;
+    height: 35px !important;
+    border-radius: 4px;
+    border: solid 1px #c5c5c5;
+    text-align: center;
+    font-size: 17px !important;
+}
+.nothing01{
+// background-color: white !important;
+border-radius: 20px !important;
+height: 100%;
+}
+
+ngx-otp-input input.mobile, ngx-otp-input .mobile {
+    // width: 30px !important;
+    padding: 0;
+}
+
+.form-content img{
+width: 100% !important;
+// margin-top: 20px !important;
+// padding-bottom: 20px !important;
+padding-left: 10px !important;
+padding-right: 10px !important;
+}
+
+.form-content{
+align-content: center;
+}
+
+.moving-bton{
+padding-bottom: 20px;
+}
+.moving-bton button{
+margin-top: 12px !important;
+ width: 100% !important;
+ padding:  12px !important;
+ border-radius: 20px; 
+ background-color: var(--primaryColor);
+ color: white !important;
+ text-align: center;
+ font-weight: bold !important;
+}
+
+
+.trezo-form {
+    border-radius:16px;
+    padding:40px;
+    // max-width: 520px;
+     width: 100%; 
+    padding: {
+        left: 12.5px;
+        right: 12.5px;
+    };
+    .form-image {
+        border-radius: 24px;
+        margin-right: -25px;
+
+        img {
+            border-radius: 24px;
+            margin-bottom: -3px;
+        }
+    }
+
+.tittle h2{
+font-size: 26px !important;
+// padding-bottom: 10px !important;
+}
+
+    .form-content {
+        padding-left: 0;
+         text-align:center;
+         
+// .otp-input{
+//     // padding: 16px 12px 12px !important;
+// }
+
+img{
+    display:block;
+    margin:auto;
+    // width:140px;
+    height:auto;
+    object-fit:contain;
+}
+    .title {
+            margin: {
+                top: 23px;
+                bottom: 23px;
+            };
+            h1 {
+                font-size: 28px;
+                margin-bottom: 7px;
+            }
+            p {
+                font-size: 16px;
+                color: #445164;
+            }
+        }
+        .with-socials {
+            margin-bottom: 23px;
+            
+            div {
+                flex-grow: 1;
+                margin: {
+                    left: 6px;
+                    right: 6px;
+                };
+                &:first-child {
+                    margin-left: 0;
+                }
+                &:last-child {
+                    margin-right: 0;
+                }
+            }
+            .mat-mdc-button {
+                width: 100%;
+                height: auto;
+                display: block;
+                min-width: auto;
+                padding: 9px 25px;
+                border-radius: 8px;
+                color: var(--blackColor);
+                border: 1px solid #D6DAE1;
+                background: var(--whiteColor);
+                box-shadow: 0px 4px 16px -2px rgba(27, 37, 51, 0.06);
+                margin-left: 30px;
+    
+            }
+        }
+        form {
+            .form-group {
+                margin-bottom: 15px;
+    
+                .main-label {
+                    margin-bottom: 12px;
+                }
+            }
+            .forgot-password {
+                a {
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+            .mat-mdc-button {
+                width: 100%;
+                height: auto;
+                display: block;
+                min-width: auto;
+                margin-top: 24px;
+                padding: 12px 25px;
+                border-radius: 7px;
+                color: var(--whiteColor);
+                background-color: var(--primaryColor);
+                font: {
+                    size: 16px;
+                    weight: 500;
+                };
+            }
+            .info {
+                margin-top: 20px;
+
+                a {
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+    }
+    &.component-dark-theme {
+        .form-content {
+            .logo {
+                img {
+                    display: none;
+
+                    &.d-none {
+                        display: inline !important;
+                    }
+                }
+            }
+            .title {
+                p {
+                    color: var(--bodyColor);
+                }
+            }
+            .with-socials {
+                .mat-mdc-button {
+                    background: #0A0E19;
+                    color: var(--whiteColor);
+                    border-color: var(--borderColor);
+                }
+            }
+        }
+    }
+    &.component-rtl-enabled {
+        .form-image {
+            margin: {
+                right: 0;
+                left: -24px;
+            };
+        }
+        .form-content {
+            padding: {
+                left: 0;
+                right: 90px;
+            };
+            .with-socials {
+                div {
+                    &:first-child {
+                        margin: {
+                            left: 6px;
+                            right: 0;
+                        };
+                    }
+                    &:last-child {
+                        margin: {
+                            right: 6px;
+                            left: 0;
+                        };
+                    }
+                }
+            }
+        }
+    }
+}
+::ng-deep {
+    .trezo-form {
+        .form-content {
+            .with-socials {
+                .mat-mdc-button {
+                    .mdc-button__label {
+                        display: block;
+                    }
+                }
+            }
+            form {
+                .mat-mdc-button {
+                    .mdc-button__label {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+    
+                        i {
+                            margin-right: 5px;
+                        }
+                    }
+                }
+            }
+        }
+        &.component-rtl-enabled {
+            .form-content {
+                form {
+                    .mat-mdc-button {
+                        .mdc-button__label {
+                            i {
+                                margin: {
+                                    right: 0;
+                                    left: 5px;
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* Max width 767px */
+@media only screen and (max-width : 767px) {
+
+    .sign-in-area {
+        padding: {
+            top: 60px;
+            bottom: 60px;
+        };
+    }
+    .trezo-form {
+        // max-width: 100%;
+
+        .form-image {
+            border-radius: 15px;
+            margin: {
+                right: 0;
+                top: 25px;
+            };
+            img {
+                border-radius: 15px;
+            }
+        }
+        .form-content {
+            padding-left: 0;
+    
+            .title {
+                margin: {
+                    top: 17px;
+                    bottom: 15px;
+                };
+                h1 {
+                    font-size: 22px;
+                }
+                p {
+                    font-size: 13px;
+                }
+            }
+            .with-socials {
+                margin-bottom: 20px;
+                
+                div {
+                    margin: {
+                        left: 5px;
+                        right: 5px;
+                    };
+                }
+                .mat-mdc-button {
+                    padding: 8px 15px;
+                }
+            }
+            form {
+                .form-group {
+                    .main-label {
+                        margin-bottom: 10px;
+                    }
+                }
+                .mat-mdc-button {
+                    padding: 12px 25px;
+                    margin-top: 17px;
+                    font-size: 13px;
+                }
+                .info {
+                    margin-top: 15px;
+                }
+            }
+        }
+        &.component-rtl-enabled {
+            .form-image {
+                margin: {
+                    left:  30px !important;
+                };
+            }
+            .form-content {
+                padding-right: 0;
+                
+                .with-socials {
+                    div {
+                        &:first-child {
+                            margin: {
+                                left: 5px;
+                            };
+                        }
+                        &:last-child {
+                            margin: {
+                                right: 5px;
+                            };
+                        }
+                    }
+                }
+            }
+        }
+    }
+    ::ng-deep {
+        .trezo-form {
+            .form-content {
+                form {
+                    .mat-mdc-button {
+                        .mdc-button__label {
+                            i {
+                                font-size: 20px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+
+/* Min width 576px to Max width 767px */
+@media only screen and (min-width : 576px) and (max-width : 767px) {
+
+    .trezo-form {
+        max-width: 540px;
+
+        .form-content {
+            .title {
+                margin: {
+                    top: 20px;
+                    bottom: 17px;
+                };
+            }
+            form {
+                .mat-mdc-button {
+                    margin-top: 20px;
+                }
+            }
+        }
+    }
+
+}
+
+/* Min width 768px to Max width 991px */
+@media only screen and (min-width : 768px) and (max-width : 991px) {
+
+    .sign-in-area {
+        padding: {
+            top: 80px;
+            bottom: 80px;
+        };
+    }
+    .trezo-form {
+        max-width: 720px;
+
+        .form-image {
+            margin: {
+                right: 0;
+                top: 25px;
+            };
+        }
+        .form-content {
+            padding-left: 0;
+    
+            .title {
+                margin: {
+                    top: 20px;
+                    bottom: 20px;
+                };
+                h1 {
+                    font-size: 24px;
+                }
+                p {
+                    font-size: 14px;
+                }
+            }
+            .with-socials {
+                margin-bottom: 20px;
+                
+                div {
+                    margin: {
+                        left: 5px;
+                        right: 5px;
+                    };
+                }
+            }
+            form {
+                .mat-mdc-button {
+                    font-size: 14px;
+                    margin-top: 20px;
+                    padding: 12px 168px;
+                }
+                .info {
+                    margin-top: 15px;
+                }
+            }
+        }
+        &.component-rtl-enabled {
+            .form-image {
+                margin: {
+                    left: 0;
+                };
+            }
+            .form-content {
+                padding-right: 0;
+        
+                .with-socials {
+                    div {
+                        &:first-child {
+                            margin: {
+                                left: 5px;
+                            };
+                        }
+                        &:last-child {
+                            margin: {
+                                right: 5px;
+                            };
+                        }
+                    }
+                }
+            }
+        }
+    }
+    ::ng-deep {
+        .trezo-form {
+            .form-content {
+                form {
+                    .mat-mdc-button {
+                        .mdc-button__label {
+                            i {
+                                font-size: 22px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+/* Min width 992px to Max width 1199px */
+@media only screen and (min-width : 992px) and (max-width : 1199px) {
+
+    .sign-in-area {
+        padding: {
+            top: 100px;
+            bottom: 100px;
+        };
+    }
+    .trezo-form {
+        max-width: 960px;
+
+        .form-image {
+            margin-right: 0;
+        }
+        .form-content {
+         
+    
+            .title {
+                h1 {
+                    font-size: 26px;
+                }
+                p {
+                    font-size: 15px;
+                }
+            }
+            form {
+                .mat-mdc-button {
+                    margin-top: 20px;
+                    font-size: 15px;
+                }
+                .info {
+                    margin-top: 15px;
+                }
+            }
+        }
+        &.component-rtl-enabled {
+            .form-image {
+                margin-left: 0;
+            }
+            .form-content {
+                padding: {
+                    left: 0;
+                    right: 15px;
+                };
+            }
+        }
+    }
+
+}
+
+/* Min width 1200px to Max width 1399px */
+@media only screen and (min-width: 1200px) and (max-width: 1399px) {
+
+    .sign-in-area {
+        padding: {
+            top: 120px;
+            bottom: 120px;
+        };
+    }
+    .trezo-form {
+        max-width: 1140px;
+
+        .form-image {
+            margin-right: 0;
+        }
+        .form-content {
+            padding-left: 25px;
+        }
+        &.component-rtl-enabled {
+            .form-image {
+                margin-left: 0;
+            }
+            .form-content {
+                padding: {
+                    left: 0;
+                    right: 25px;
+                };
+            }
+        }
+    }
+
+}
+
+/* Min width 1600px */
+@media only screen and (min-width: 1600px) {
+
+    .trezo-form {
+        .form-image {
+            margin-right: -45px;
+        }
+        .form-content {
+            // padding-left: 120px;
+        }
+        &.component-rtl-enabled {
+            .form-image {
+                margin: {
+                    right: 0;
+                    left: -45px;
+                };
+            }
+            .form-content {
+                padding: {
+                    left: 0;
+                    right: 120px;
+                };
+            }
+        }
+    }
+
+}
+
+  ngx-otp-input .otp-input-elem input {
+    font-size: 16px !important;
+    // width: 22px;
+    // height: 35px !important;
+    border-radius: 10px;
+    border: solid 1px #c5c5c5;
+   display:flex;
+    justify-content:center;
+    align-items: center;
+  }
+
+.resend_otp{
+    background-color: #605DFF;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 10px;
+    position: relative;
+    // top: -15px;
+}
+ngx-otp-input div.n-o-c {
+  display: flex !important;
+  justify-content: center !important;
+//   width: 70% !important;
+}
+  .contentset{
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: var(--bodyColor);
+    background-color: #f6f7f9;
+    font-family: Neusharp, sans-serif !important;
+  }
+
+  ngx-otp-input .otp-input-elem input {
+    font-size: 22px !important;
+    border-radius: 10px;
+    border: solid 1px #c5c5c5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.otp-btn .btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+
+.mob-box {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  margin: 0 auto;
+
+  ngx-otp-input div.n-o-c {
+    width: fit-content !important;
+    margin: 0 auto !important;
+  }
+
+  input.mobile, .mobile {
+    width: clamp(24px, 4.5vw, 38px) !important;
+    height: clamp(32px, 5vw, 42px) !important;
+    font-size: clamp(14px, 2.5vw, 20px) !important;
+    border-radius: 6px !important;
+  }
+}
+@media only screen and (min-width: 1400px) {
+    .trezo-form {
+        max-width: 1320px;
+    }
+}
+
+/* Min width 992px to Max width 1199px */
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+
+    .sign-in-area {
+        padding: {
+            top: 100px;
+            bottom: 100px;
+        };
+    }
+    .trezo-form {
+        max-width: 960px;
+
+        .form-image {
+            margin-right: 0;
+        }
+        .form-content {
+            .title {
+                h1 { font-size: 26px; }
+                p { font-size: 15px; }
+            }
+            form {
+                .mat-mdc-button {
+                    margin-top: 20px;
+                    font-size: 15px;
+                }
+                .info { margin-top: 15px; }
+            }
+        }
+    }
+
+    .ng-otp-input-wrapper .otp-input {
+    margin: 0 .21rem !important;
+}
+
+    .mob-box {
+        ::ng-deep ngx-otp-input div.n-o-c {
+            width: fit-content !important;
+            gap: 4px !important;
+        }
+
+        ::ng-deep ngx-otp-input .otp-input-elem input,
+        ngx-otp-input input.mobile,
+        ngx-otp-input .mobile {
+            width: clamp(20px, 3vw, 30px) !important;  
+            height: clamp(28px, 3.5vw, 36px) !important;
+            font-size: clamp(12px, 1.8vw, 16px) !important;
+        }
+    }
+}
+
+.login-toggle-container {
+    background-color: #f1f2f4;
+    border-radius: 30px;
+    padding: 4px;
+    width: fit-content;
+    margin: 0 auto;
+    display: flex;
+    
+    .login-toggle-btn {
+        border: none;
+        background: transparent;
+        padding: 8px 18px;
+        border-radius: 26px;
+        font-weight: 500;
+        font-size: 14px;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &.active {
+            background-color: var(--primaryColor, #605DFF);
+            color: #ffffff !important;
+            box-shadow: 0px 4px 10px rgba(96, 93, 255, 0.2);
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+}

@@ -1,0 +1,50 @@
+<!-- <mat-card class="apps-to-do-list-card table-style-two mb-25 border-radius d-block bg-white border-0 shadow-none"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()">
+    <div class="mt-3">
+        @if(!showappsliderForm){
+        <app-mat-table #mattablechild URL="AppSlider/All" [action]="action" [filterOptions]="['All']"
+            [columns]="columns" (add)="Toggleclass($event,'add')" (view)="Toggleclass($event,'view')"
+            (edit)="Toggleclass($event,'edit')" [addedName]="'App Slider Content'"></app-mat-table>
+        }@else{
+        <form [formGroup]="appForm">
+            <div class="row">
+                <mat-form-field [hidden]="true">
+                    <input matInput placeholder="" formControlName="Id" type="text" />
+                </mat-form-field>
+
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label> Page</mat-label>
+                            <input matInput placeholder="" formControlName="Page" type="text" />
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="col-md-12 mt-3">
+                    <div class="form-group">
+                        <app-quill></app-quill>
+                    </div>
+                </div>
+
+               
+
+                 <div class="col-md-12 mt-3">
+                    <div class="buttonsset">
+                   <button type="button" class="btn mt-1 cacelbutton" style="width: 100px;" (click)="closeAppForm()">
+                Cancel
+              </button>
+              <button type="button" class="btn mt-1 submitbutton"  style="width: 100px;" (click)="SubmitAppForm(appForm)">
+                Submit
+              </button>
+                    </div>
+
+                 </div>
+
+            </div>
+        </form>
+        }
+    </div>
+</mat-card> -->
+
+<app-banner></app-banner>

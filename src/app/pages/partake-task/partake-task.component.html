@@ -1,0 +1,215 @@
+<mat-card
+  class="apps-to-do-list-card table-style-two mb-25 border-radius d-block bg-white border-0 shadow-none"
+  [class.component-rtl-enabled]="themeService.isRTLEnabled()">
+
+  <div class="mt-3">
+
+    <!-- ══════════════════════════════════════════════════════
+         TASK LIST VIEW
+    ══════════════════════════════════════════════════════ -->
+    @if (!showTaskForm && !showSubmissions) {
+      <app-mat-table
+        #mattablechild
+        URL="PartakeTask/All"
+        [action]="action"
+        [filterOptions]="['All']"
+        [columns]="columns"
+        (add)="Toggleclass($event, 'add')"
+        (view)="Toggleclass($event, 'view')"
+        (edit)="Toggleclass($event, 'edit')"
+        (submissions)="openSubmissions($event)"
+        [addedName]="'Partake Task'">
+      </app-mat-table>
+    }
+
+    <!-- ══════════════════════════════════════════════════════
+         ADD / EDIT / VIEW TASK FORM
+    ══════════════════════════════════════════════════════ -->
+    @if (showTaskForm) {
+      <form [formGroup]="taskForm">
+        <div class="row">
+
+          <!-- Form header -->
+          <div class="col-md-12 form-header-row">
+            <h4>
+              {{ formMode === 'add' ? 'Add' : formMode === 'edit' ? 'Edit' : 'View' }}
+              Partake Task
+            </h4>
+            <!-- <button type="button" class="btn cacelbutton icon-btn" (click)="closeTaskForm()">
+              <mat-icon>close</mat-icon>
+            </button> -->
+          </div>
+
+          <!-- Hidden Id -->
+          <mat-form-field [hidden]="true">
+            <input matInput formControlName="Id" type="text" />
+          </mat-form-field>
+
+          <!-- Title -->
+          <div class="col-md-12">
+            <div class="form-group">
+              <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                <mat-label>Task Title *</mat-label>
+                <input matInput formControlName="Title" type="text"
+                  placeholder="Enter a creative and engaging title" maxlength="200" />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Description (Quill) -->
+          <div class="col-md-12 mt-2">
+            <!-- <label class="field-label">Task Description</label> -->
+            <div class="form-group">
+              <app-quill
+                [description]="taskForm.get('Description')?.value"
+                [Mode]="formMode"
+                (descriptionChange)="updateDescription($event)">
+              </app-quill>
+            </div>
+          </div>
+
+          <!-- Instructions (Quill) -->
+          <div class="col-md-12 mt-3">
+            <!-- <label class="field-label">Task Instructions</label> -->
+            <div class="form-group">
+              <app-quill
+                label="Instructions"
+                placeholder="Enter instructions..."
+                [description]="taskForm.get('Instructions')?.value"
+                [Mode]="formMode"
+                (descriptionChange)="updateInstructions($event)">
+              </app-quill>
+            </div>
+          </div>
+
+          <!-- Points -->
+          <div class="col-md-6 mt-3">
+            <div class="form-group">
+              <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                <mat-label>Points (Reward) *</mat-label>
+                <input matInput formControlName="Points" type="number"
+                  placeholder="Enter points" min="1" />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="col-md-6 mt-3">
+            <div class="form-group">
+                <mat-form-field [appearance]="formFieldAppearance">
+                    <mat-label>Gender</mat-label>
+                       <mat-select formControlName="Gender">
+                         <mat-option value='Male'>Male</mat-option>
+                         <mat-option value='Female'>Female</mat-option>
+                         <mat-option value='All'>All</mat-option>
+                          <!-- <mat-option value='Variant'>Variant</mat-option> -->
+              </mat-select>
+                </mat-form-field>
+            </div>
+          </div>
+
+          <div class="col-md-6 mt-3">
+            <div class="form-group">
+              <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                <mat-label>Age Group *</mat-label>
+                <mat-select formControlName="AgeId">
+                  <mat-option *ngFor="let age of ageGroups" [value]="age.Id">
+                    {{ age.Value }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="col-md-6 mt-3">
+            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+              <mat-label>Category</mat-label>
+              <mat-select formControlName="CategoryId">
+                @for (cat of category; track cat.Id) {
+                  <mat-option [value]="cat.Id">{{ cat.Name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Start Date -->
+          <div class="col-md-6 mt-3">
+            <div class="form-group">
+              <label class="field-label">Start Date &amp; Time *</label>
+              <input
+                class="native-date-input"
+                type="datetime-local"
+                formControlName="StartDate"
+                [disabled]="formMode === 'view'" />
+            </div>
+          </div>
+
+          <!-- End Date -->
+          <div class="col-md-6 mt-3">
+            <div class="form-group">
+              <label class="field-label">End Date &amp; Time *</label>
+              <input
+                class="native-date-input"
+                type="datetime-local"
+                formControlName="EndDate"
+                [disabled]="formMode === 'view'" />
+            </div>
+          </div>
+
+          <div class="col-md-6 mt-3">
+            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+              <mat-label>Status</mat-label>
+              <mat-select formControlName="Status">
+                @for (s of statusOptions; track s) {
+                  <mat-option [value]="s">{{ s }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Task Image Upload -->
+          <div class="col-md-12 mt-3">
+            <label class="field-label">Task Image</label>
+            <p class="field-note">
+              Only jpg &amp; jpeg supported. Max 1MB.
+              Recommended: <strong>1351px × 591px</strong>
+            </p>
+            <app-fileupload
+              [filedname]="'TaskImage'"
+              [previewUrls]="taskImageUrls"
+              (ImageEmitValue)="onImageReceived($event)"
+              (deleteImage)="onDeleteImage($event)"
+              [Mode]="formMode">
+            </app-fileupload>
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-md-12 mt-4">
+            <div class="buttonsset">
+              <button type="button" class="btn cacelbutton"
+                style="width:120px" (click)="closeTaskForm()">
+                Cancel
+              </button>
+              <button type="button" class="btn submitbutton"
+                style="width:150px" (click)="SubmitTaskForm(taskForm)"
+                [disabled]="formMode === 'view'">
+                {{ formMode === 'add' ? 'Publish Task' : 'Update Task' }}
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    }
+
+    <!-- ══════════════════════════════════════════════════════
+         SUBMISSIONS VIEW  —  delegates to child component
+    ══════════════════════════════════════════════════════ -->
+    @if (showSubmissions) {
+      <app-partake-submission
+        [selectedTask]="selectedTask"
+        (back)="closeSubmissions()">
+      </app-partake-submission>
+    }
+
+  </div>
+</mat-card>

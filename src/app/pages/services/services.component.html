@@ -1,0 +1,308 @@
+<mat-card class="apps-to-do-list-card table-style-two mb-25 border-radius d-block bg-white border-0 shadow-none"
+  [class.component-rtl-enabled]="themeService.isRTLEnabled()">
+  <div class="mt-3">
+
+    @if (!showServiceForm && !showDetailView) {
+
+<app-mat-table #mattablechild
+  URL="Service/All"
+  [action]="action"
+  [filterOptions]="['All','Active','Inactive','Draft','Completed']"
+  [columns]="columns"
+  (add)="Toggleclass($event,'add')"
+  (edit)="Toggleclass($event,'edit')"
+  (view)="Toggleclass($event,'view')"
+  (submissions)="Toggleclass($event,'submissions')"
+  [addedName]="'Service'">
+
+</app-mat-table>
+    }
+
+    @else if (showServiceForm) {
+      <form [formGroup]="serviceForm">
+        <div class="row">
+          <h4 style="margin-bottom:15px">
+            {{ formMode === 'add' ? 'Add' : 'Edit' }} Service
+          </h4>
+
+          <mat-form-field [hidden]="true">
+            <input matInput formControlName="Id" />
+          </mat-form-field>
+
+          <div class="col-md-6 mb-3">
+            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+              <mat-label>Service Name</mat-label>
+              <input matInput formControlName="Name" placeholder="Enter service name" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="Email" placeholder="Enter email address" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+              <mat-label>Phone Number</mat-label>
+              <input matInput formControlName="PhoneNumber" placeholder="Enter phone number" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+              <mat-label>WhatsApp Number</mat-label>
+              <input matInput formControlName="WhatsAppNumber" placeholder="Enter WhatsApp number" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+              <mat-label>Location</mat-label>
+              <input matInput formControlName="Location" placeholder="Enter service location" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+              <mat-label>Google Map Location Link</mat-label>
+              <input matInput formControlName="GoogleMapLocationLink" placeholder="https://maps.google.com/..." />
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+              <mat-label>Category</mat-label>
+              <mat-select formControlName="CategoryId">
+                @for (cat of category; track cat.Id) {
+                  <mat-option [value]="cat.Id">{{ cat.Name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+              <mat-label>Score / Point</mat-label>
+              <input matInput type="number" formControlName="ScorePoint" placeholder="Enter score or point" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+              <mat-label>Course Duration</mat-label>
+              <mat-select formControlName="CourseDuration">
+                @for (d of durationOptions; track d) {
+                  <mat-option [value]="d">{{ d }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+                <mat-form-field [appearance]="formFieldAppearance">
+                    <mat-label>Gender</mat-label>
+                       <mat-select formControlName="Gender">
+                         <mat-option value='Male'>Male</mat-option>
+                         <mat-option value='Female'>Female</mat-option>
+                         <mat-option value='All'>All</mat-option>
+                          <!-- <mat-option value='Variant'>Variant</mat-option> -->
+              </mat-select>
+                </mat-form-field>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+                <mat-form-field [appearance]="formFieldAppearance">
+                    <mat-label>Age</mat-label>
+                    <mat-select formControlName="AgeId">
+                        @for (age of GetAges; track age) {
+                            <mat-option [value]="age?.Id">{{age?.Value}}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+
+          <div class="col-md-6 mb-3">
+            <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+              <mat-label>Status</mat-label>
+              <mat-select formControlName="Status">
+                @for (s of statusOptions; track s) {
+                  <mat-option [value]="s">{{ s }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-12 mt-3">
+            <app-quill
+              [description]="serviceForm.get('Description')?.value"
+              [Mode]="formMode"
+              (descriptionChange)="updateDescription($event)">
+            </app-quill>
+          </div>
+
+          <div class="col-md-12 mt-3">
+            <app-quill
+              label="Instructions"
+              placeholder="Enter instructions..."
+              [description]="serviceForm.get('Instructions')?.value"
+              [Mode]="formMode"
+              (descriptionChange)="updateInstructions($event)">
+            </app-quill>
+          </div>
+
+          <div class="col-md-12 mt-3">
+            <app-fileupload
+              [filedname]="'Service Banner'"
+              [previewUrls]="serviceUrls"
+              (ImageEmitValue)="onImageReceived($event)"
+              (deleteImage)="onDeleteImage($event)"
+              [Mode]="formMode">
+            </app-fileupload>
+          </div>
+
+          <div class="col-md-12 mt-3">
+            <div class="buttonsset">
+              <button type="button" class="btn mt-1 cacelbutton"
+                style="width:100px" (click)="closeServiceForm()">
+                Cancel
+              </button>
+              <button type="button" class="btn mt-1 submitbutton"
+                style="width:100px" (click)="SubmitServiceForm(serviceForm)">
+                Submit
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    }
+
+@else if (showDetailView) {
+
+  @if (!serviceDetail) {
+    <div class="text-center py-5">
+      <div class="spinner-border" style="color:#6c5ce7" role="status"></div>
+      <p class="mt-3 text-muted" style="font-size:14px">Loading service details...</p>
+    </div>
+  } @else {
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <!-- <button class="detail-back-btn" (click)="closeDetailView()">
+        <mat-icon>arrow_back</mat-icon> Back
+      </button> -->
+
+      <button type="button" class="back-nav-btn" (click)="closeDetailView()">
+        <span class="back-arrow">
+          <mat-icon>arrow_back_ios</mat-icon>
+        </span>
+        <span class="back-label">{{'Back' | translate}}</span>
+      </button>
+
+      <button class="detail-edit-btn" (click)="editFromDetail()">
+        <mat-icon>edit</mat-icon> Edit Service
+      </button>
+    </div>
+
+    <div class="service-info-card d-flex gap-3 align-items-start">
+      <img
+        class="service-image"
+        [src]="serviceDetail?.UploadImage
+          ? environment.domain + '/' + serviceDetail.UploadImage
+          : 'assets/images/noimage.png'"
+        alt="service" />
+
+      <div class="flex-grow-1">
+        <div class="service-name">{{ serviceDetail?.Name }}</div>
+
+        <div class="mb-2">
+          <span class="status-badge"
+            [class.active]="serviceDetail?.Status === 'Active'"
+            [class.inactive]="serviceDetail?.Status !== 'Active'">
+            {{ serviceDetail?.Status }}
+          </span>
+          <span class="category-badge">{{ getCategoryName(serviceDetail?.CategoryId) }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-item">
+            <mat-icon>phone</mat-icon>
+            {{ serviceDetail?.PhoneNumber || '—' }}
+          </span>
+          <span class="info-item">
+            <mat-icon>location_on</mat-icon>
+            {{ serviceDetail?.Location || '—' }}
+          </span>
+          <span class="info-item">
+            <mat-icon>calendar_today</mat-icon>
+            Created: {{ serviceDetail?.CreatedAt | date:'dd MMM yyyy' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <mat-icon>assignment_turned_in</mat-icon>
+          </div>
+          <div class="stat-label">Total Claims</div>
+          <div class="stat-number">{{ serviceDetail?.TotalClaims || 0 }}</div>
+          <div class="stat-unit">Times</div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <mat-icon>group</mat-icon>
+          </div>
+          <div class="stat-label">Total Students Used</div>
+          <div class="stat-number">{{ serviceDetail?.TotalStudents || 0 }}</div>
+          <div class="stat-unit">Students</div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <mat-icon>star</mat-icon>
+          </div>
+          <div class="stat-label">Total Points Used</div>
+          <div class="stat-number">{{ serviceDetail?.TotalPointsUsed || 0 | number }}</div>
+          <div class="stat-unit">Points</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="claims-card">
+
+      <app-mat-table
+        [URL]="claimsTableUrl"
+        [columns]="claimsColumns"
+        [action]="claimsAction"
+        [showBackButton]="false"
+        [addedName]="'Recently Claimed Students'">
+      </app-mat-table>
+
+      <!-- View All Claims button -->
+      <!-- <div class="mt-2">
+        <button class="view-all-btn" (click)="viewAllClaims()">
+          <mat-icon style="font-size:16px;height:16px;width:16px">open_in_new</mat-icon>
+          View All Claims
+        </button>
+      </div> -->
+    </div>
+
+  }
+}
+  </div>
+</mat-card>

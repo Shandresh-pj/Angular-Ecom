@@ -1,0 +1,26 @@
+.description-label {
+  display: block;
+  font-size: 14px;
+  color: #64748B;
+  margin-bottom: 8px;
+}
+
+::ng-deep .ql-container {
+  min-height: 200px;
+  font-size: 14px;
+  border-radius: 0 0 7px 7px;
+  font-family: 'Neusharp', sans-serif;
+}
+
+::ng-deep .ql-toolbar {
+  border-radius: 7px 7px 0 0;
+  border-color: #D5D9E2 !important;
+}
+
+::ng-deep .ql-container {
+  border-color: #D5D9E2 !important;
+}
+
+::ng-deep .ql-editor {
+  min-height: 200px;
+}

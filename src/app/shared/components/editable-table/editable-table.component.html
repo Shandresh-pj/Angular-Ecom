@@ -1,0 +1,258 @@
+<!-- <mat-card
+    class="editableTable mb-25 border-radius d-block bg-white border-0 shadow-none"
+    [class.component-dark-theme]="themeService.isDark()"
+>
+<mat-card-content> -->
+@if(!url.includes('customers/tariff') && !view){
+<div class="d-flex justify-content-between">
+    <button mat-raised-button color="primary" (click)="addNewRow()" [disabled]="!isParentFormValid" style="
+                border: 1px solid #0FB970 !important;
+                box-shadow: none !important;
+                margin: 10px !important;
+                height: 40px;
+            ">
+        <i class="material-symbols-outlined fa-2x"  style="position: relative; top: 2px">
+            add
+        </i>
+        <span style="position: relative; top: -4px">Add New </span>
+    </button>
+    <button mat-raised-button color="primary" (click)="AllowancePopup()" [disabled]="!isParentFormValid" style="
+                border: 1px solid #0FB970 !important;
+                box-shadow: none !important;
+                margin: 10px !important;
+                height: 40px;
+            ">
+        <!-- <i class="material-symbols-outlined fa-2x" style="position: relative; top: 2px">
+            add
+        </i> -->
+        <span>Allowance Time </span>
+    </button>
+</div>
+}
+<div [class.component-dark-theme]="themeService.isDark()" class="editableTable " tabindex="0">
+
+    <section class="table-container mat-elevation-z8 shadow-none">
+        <table mat-table [dataSource]="dataSource">
+            <!-- Dynamic Columns -->
+            @for(column of columns;track column;let inx=$index;){
+
+
+            <!-- <ng-container [matColumnDef]="column.field" [sticky]="inx<3"> -->
+            <ng-container [matColumnDef]="column.field">
+                <th mat-header-cell *matHeaderCellDef>{{ column.header }}</th>
+                <td mat-cell *matCellDef="let row">
+                    @if(row?.Flag!='D' && row?.Flag!='CD'){
+                    <ng-container *ngIf="
+                            !editingElement ||
+                                editingElement[primaryKey] !== row[primaryKey];
+                            else editField
+                        ">
+
+                        {{ getSelectedValue(column, row) }}
+
+                    </ng-container>
+                    <ng-template #editField>
+                        <form [formGroup]="editForm">
+                            <ng-container *ngIf="column.editable; else readOnlyField"> <mat-form-field>
+
+                                    @if(editingElement?.[primaryKey] ===
+                                    row[primaryKey]){ @if(column?.type=='select'){
+                                    <mat-select formControlName="{{ column.field }}"
+                                        (selectionChange)="VehicleSelected(column.field,$event.value)"
+                                        [multiple]="column.field !== 'CommissionType'">
+                                        @if( column.field!=='CommissionType'){
+                                        <!-- <mat-option
+                                    class="select-all-option"
+                                    (click)="$event.stopPropagation()"
+            
+    > -->
+                                        <div class="select-all">
+                                            <mat-checkbox [checked]="isAllSelected(column.field)"
+                                                [indeterminate]="isIndeterminate(column.field)"
+                                                (click)="$event.stopPropagation()"
+                                                (change)="toggleSelectAll(column.field)">
+                                                Select All
+                                            </mat-checkbox>
+                                        </div>
+                                        @if (column?.field === 'ForCompanyParentId'  && type === 'Sub Vendor' ) {
+                                            <mat-option [value]="-1">For All</mat-option>
+                                          }
+                                          @if (column?.field === 'ForCompanyId'  && type === 'Sub Vendor') {
+                                            <mat-option [value]="-1">For All</mat-option>
+                                          }
+                                        <!-- </mat-option> -->
+                                        }
+                                        @if(this.type == 'Sub Vendor' && column.field=='CommissionType'){
+                                        <mat-option value="Percentage">Percentage</mat-option>
+                                        <mat-option value="Rate">Rate</mat-option>
+                                        }
+                                        <!-- @if(this.type == 'Sub Vendor' && column.field=='ForCompanyParentId'){
+                                            <mat-option value="-1">For All</mat-option>
+                                           
+                                            } -->
+                                        @else{
+                                      
+                                        <!-- } -->
+                                        <!-- @else{ -->
+                                        @for(opt of (column?.options || []) ;track
+                                        opt){
+                                        
+                                        <mat-option [value]="opt?.[column?.optionsDetail?.value ?? 'Id']">{{
+                                            opt?.[column?.optionsDetail?.label ?? 'Name']
+                                            }}</mat-option>
+
+                                        }
+                                        }
+                                        <!-- } -->
+                                    </mat-select>
+                                    } @else{
+                                    <input matInput formControlName="{{ column.field }}" maxlength="10"
+                                        style="max-width:fit-content" />
+                                    <!-- (input)="onInput($event)" -->
+
+                                    } }
+                                </mat-form-field>
+                            </ng-container>
+                            <ng-template #readOnlyField>
+                                @if(column?.type=='select'){
+                                {{ getSelectedValue(column, row) }}
+                                } @else{
+                                {{ row[column.field] }}
+                                }
+                            </ng-template>
+
+
+                        </form>
+                    </ng-template>
+                    }
+                </td>
+            </ng-container>
+
+            }
+            <!-- Action Column -->
+
+            <ng-container matColumnDef="actions" [stickyEnd]="true">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let row">
+                    @if(row?.Flag!='D' && row?.Flag!='CD'){
+                    <div class="action-buttons d-flex align-items-center">
+                        @if(!editingElement || editingElement[primaryKey] !==
+                        row[primaryKey]){
+                        @if(!url.includes('customers/tariff') && !view &&!copy){
+                        <button mat-button (click)="startEdit(row)">
+                            <i class="material-symbols-outlined"> edit </i>
+                        </button>
+                        <button mat-button (click)="CopyEdit(row)">
+                            <i class="material-symbols-outlined"> content_copy </i>
+                        </button>
+                        <button mat-button (click)="removeRow(row)">
+                            <i class="material-symbols-outlined"> delete </i>
+                        </button>
+                        }
+
+                        @if(!url.includes('customers/tariff') && !view && copy){
+                        <button mat-button (click)="startEdit(row)">
+                            <i class="material-symbols-outlined"> edit </i>
+                        </button>
+                        <button mat-button (click)="CopyEdit(row)">
+                            <i class="material-symbols-outlined"> content_copy </i>
+                        </button>
+                        <button mat-button (click)="removeCopyRow(row)">
+                            <i class="material-symbols-outlined"> delete </i>
+                        </button>
+                        }
+                        } @if(editingElement?.[primaryKey] === row[primaryKey]){
+                        <ng-container class="d-flex justify-content-center">
+                            <a mat-button (click)="saveEdit(row)">
+                                <i class="material-symbols-outlined">save</i>
+                            </a>
+                            <!-- <button mat-button color="white" style="background-color: #FA3D22; color: white !important;" (click)="cancelEdit()">
+                        Cancel
+                    </button> -->
+                        </ng-container>
+                        }
+                    </div>
+                    }
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+    </section>
+</div>
+
+<div class="add-new-popup" [class.active]="allowancepopup" >
+    <div class="popup-dialog">
+        <mat-card class="border-radius d-block bg-white border-0 shadow-none" style="height: auto;">
+             <mat-card-header class="mb-0">
+                <mat-card-title>
+                    <h5 class="mb-0">Allowance Time</h5>
+                </mat-card-title>
+                <mat-card-subtitle>
+             <button mat-button (click)="AllowancePopupClose()">
+                        <i class="ri-close-fill"></i>
+                    </button>
+                    </mat-card-subtitle>
+                    </mat-card-header>
+                     <mat-card-content
+                style="
+                    overflow-y: scroll !important;
+                   
+                  
+                "
+            >
+       
+    <div class="table-responsive">
+        <table mat-table [dataSource]="Allowancedatasource">
+            <ng-container matColumnDef="Name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let element; let i = index" class="name-cell">
+                    {{splitCamelCases(element.Name)}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="FromTime">
+                <th mat-header-cell *matHeaderCellDef>From Time</th>
+                <td mat-cell *matCellDef="let element; let i = index">
+                    <div class="allowancetimewidth" >
+                        <app-hours-mins
+                            label="Hours"
+                            label1="Mins"
+                           [formControl]="getFromTimeControl(i)"
+                        ></app-hours-mins>
+                    </div>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="ToTime">
+                <th mat-header-cell *matHeaderCellDef>To Time</th>
+                <td mat-cell *matCellDef="let element; let i = index">
+                    <div class="allowancetimewidth">
+                        <app-hours-mins
+                            label="Hours"
+                            label1="Mins"
+                           [formControl]="getToTimeControl(i)"
+                        ></app-hours-mins>
+                    </div>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="AllowancedisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: AllowancedisplayedColumns"></tr>
+        </table>
+    </div>
+    <div class="mt-2 d-flex justify-content-end">
+        <button  style=" height: 48px !important; color: var(--whiteColor);
+    background-color: var(--primaryColor); "
+        mat-button
+        color="primary"
+            (click)="AllowancePopupClose()"
+            >
+            Save
+        </button>
+    </div>
+</mat-card-content>
+        </mat-card></div></div>
+<!-- </mat-card-content>
+</mat-card> -->

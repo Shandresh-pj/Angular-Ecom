@@ -1,0 +1,22 @@
+<div class="row">
+    <div class="col-6">
+      <mat-form-field>
+        <mat-label>{{ label }}</mat-label>
+        <mat-select [formControl]="hourControl">
+          @for(hour of hours; track hour) {
+          <mat-option class="text-center" [value]="hour">{{ hour | number:'2.0' }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-6">
+      <mat-form-field>
+        <mat-label>{{ label1 }}</mat-label>
+        <mat-select [formControl]="minuteControl">
+          @for(minute of minutes; track minute) {
+          <mat-option class="text-center" [value]="minute">{{ minute | number:'2.0' }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>

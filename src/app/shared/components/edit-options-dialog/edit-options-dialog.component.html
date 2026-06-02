@@ -1,0 +1,14 @@
+<h2 mat-dialog-title>Edit Options</h2>
+<mat-dialog-content  style="border: 1px solid #D5D9E2;">
+  <div class="d-flex flex-column">
+    <button mat-button (click)="selectOption('tariff')" class="mb-2">
+      Tariff Edit
+    </button>
+    <button mat-button (click)="selectOption('field')">
+      Field Edit
+    </button>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close color="warn">Cancel</button>
+</mat-dialog-actions>
