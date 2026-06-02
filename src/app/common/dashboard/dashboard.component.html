@@ -13,13 +13,13 @@
               <path d="M12 14C7.58172 14 4 17.5817 4 22H20C20 17.5817 16.4183 14 12 14Z" fill="#5b57f5"/>
             </svg>
           </div>
-          <p class="admin-content-num">{{dashboardData.Dealers.total}}</p>
+          <p class="admin-content-num">{{dashboardData?.Dealers?.total}}</p>
         </div>
         <p class="stat-title">Dealers</p>
         <div class="trend-row">
           <span class="trend-arrow">↑</span>
           <span class="trend-label">Last Week :</span>
-          <span class="trend-value">{{dashboardData.Dealers.lastWeek}}</span>
+          <span class="trend-value">{{dashboardData?.Dealers?.lastWeek}}</span>
         </div>
         <div class="sparkline-wrap">
           <svg viewBox="0 0 120 38" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -45,13 +45,13 @@
               <path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z" fill="#f5a623"/>
             </svg>
           </div>
-          <p class="admin-content-num">{{dashboardData.Resellers.total}}</p>
+          <p class="admin-content-num">{{dashboardData?.Resellers?.total}}</p>
         </div>
         <p class="stat-title">Resellers</p>
         <div class="trend-row">
           <span class="trend-arrow">↑</span>
           <span class="trend-label">Last Week :</span>
-          <span class="trend-value">{{dashboardData.Resellers.lastWeek}}</span>
+          <span class="trend-value">{{dashboardData?.Resellers?.lastWeek}}</span>
         </div>
         <div class="sparkline-wrap">
           <svg viewBox="0 0 120 38" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -78,13 +78,13 @@
               <path d="M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z" fill="#00b2d6"/>
             </svg>
           </div>
-          <p class="admin-content-num">{{dashboardData.Students.total}}</p>
+          <p class="admin-content-num">{{dashboardData?.Students?.total}}</p>
         </div>
         <p class="stat-title">Students</p>
         <div class="trend-row">
           <span class="trend-arrow">↑</span>
           <span class="trend-label">Last Week :</span>
-          <span class="trend-value">{{dashboardData.Students.lastWeek}}</span>
+          <span class="trend-value">{{dashboardData?.Students?.lastWeek}}</span>
         </div>
         <div class="sparkline-wrap">
           <svg viewBox="0 0 120 38" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -110,13 +110,13 @@
               <path d="M17 10.5V7C17 6.45 16.55 6 16 6H4C3.45 6 3 6.45 3 7V17C3 17.55 3.45 18 4 18H16C16.55 18 17 17.55 17 17V13.5L21 17.5V6.5L17 10.5Z" fill="#4caf7d"/>
             </svg>
           </div>
-          <p class="admin-content-num">{{dashboardData.Videos.total}}</p>
+          <p class="admin-content-num">{{dashboardData?.Videos?.total}}</p>
         </div>
         <p class="stat-title">Videos</p>
         <div class="trend-row">
           <span class="trend-arrow">↑</span>
           <span class="trend-label">Last Week :</span>
-          <span class="trend-value">{{dashboardData.Videos.lastWeek}}</span>
+          <span class="trend-value">{{dashboardData?.Videos?.lastWeek}}</span>
         </div>
         <div class="sparkline-wrap">
           <svg viewBox="0 0 120 38" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
@@ -145,7 +145,7 @@
           </div>
     
           <p class="admin-content-num">
-            {{dashboardData.Products.total}}
+            {{dashboardData?.Products?.total}}
           </p>
         </div>
     
@@ -155,7 +155,7 @@
           <span class="trend-arrow">↑</span>
           <span class="trend-label">Last Week :</span>
           <span class="trend-value">
-            {{dashboardData.Products.lastWeek}}
+            {{dashboardData?.Products?.lastWeek}}
           </span>
         </div>
 

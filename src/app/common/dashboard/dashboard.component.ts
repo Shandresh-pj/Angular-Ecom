@@ -17,7 +17,8 @@ export class DashboardComponent  extends Utils implements OnInit {
     Dealers: { total: 0, lastWeek: 0 },
     Resellers: { total: 0, lastWeek: 0 },
     Students: { total: 0, lastWeek: 0 },
-    Videos: { total: 0, lastWeek: 0 }
+    Videos: { total: 0, lastWeek: 0 },
+    Products: { total: 0, lastWeek: 0 }
   };
   constructor(
             public themeService: CustomizerSettingsService,
@@ -37,7 +38,7 @@ export class DashboardComponent  extends Utils implements OnInit {
             getDashboardCounts() {
               this.commonService.getApi('User/dashboard-counts').subscribe({
                 next: (res: any) => {
-                  this.dashboardData = res;
+                  this.dashboardData = { ...this.dashboardData, ...res };
                 },
                 error: (err: any) => {
                   console.error(err);
