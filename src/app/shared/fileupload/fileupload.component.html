@@ -1,46 +1,92 @@
 <div class="row">
+
     <div class="col-md-6">
-        <label>Upload Image</label>
+
+        <!-- <label>Upload Image</label> -->
+
         <div class="banner-info-col mt-1">
+
             <p class="fontS12">
-                <b>Note</b>:- {{filedname}} size -
-                <b class="text-danger">1351px(Width) X
-                    591px(Height).</b>
+                <b>Note</b>:- {{ filedname }} size -
+                <b class="text-danger">
+                    1351px(Width) X 591px(Height)
+                </b>
             </p>
 
             <div class="form-group mt-2">
-                <input #fileInput type="file" class="form-control" accept="image/*" (change)="
-                     detectFiles($event)" [disabled]="isViewMode" />
+
+                <input
+                    #fileInput
+                    type="file"
+                    class="form-control"
+                    accept="image/*"
+                    [multiple]="multiple"
+                    (change)="detectFiles($event)"
+                    [disabled]="isViewMode"
+                />
+
             </div>
 
             <p class="fontS12 mt-1">
                 <b>Note:-</b> Only
-                <b>jpg & jpeg</b> files
-                supported. Max Size <b>1MB</b>.
+                <b>jpg & jpeg</b> files supported.
+                Max Size <b>1MB</b>.
             </p>
+
             <p class="fontS12">
                 <b>Note:-</b> Press
-                <b>Control + f5</b> if {{filedname}}
-                not reflecting after upload.
+                <b>Control + F5</b>
+                if image not reflecting.
             </p>
+
         </div>
+
     </div>
+
     <div class="col-md-1"></div>
+
     <div class="col-md-4 d-flex align-items-center justify-content-center">
+
         <div class="banner-thumb-col">
+
             @if (urls.length > 0) {
-            @for (url of urls;track url) {
-            <div class="position-relative">
-                @if(!isViewMode){
-                <button type="button" class="btn btn-danger btn-sm delete-btn mt-0" (click)="deleteimage(url)">
-                    <mat-icon class="matdeleteicon">delete</mat-icon>
-                </button>
+
+                @for (url of urls; track url) {
+
+                    <div class="position-relative mb-2">
+
+                        @if (!isViewMode) {
+
+                            <button
+                                type="button"
+                                class="btn btn-danger btn-sm delete-btn mt-0"
+                                (click)="deleteimage(url)"
+                            >
+                                <mat-icon class="matdeleteicon">
+                                    delete
+                                </mat-icon>
+                            </button>
+
+                        }
+
+                        <img
+                            crossorigin="anonymous"
+                            [src]="url"
+                            width="120"
+                            height="120"
+                            style="object-fit: cover; border-radius: 8px;"
+                        />
+
+                    </div>
+
                 }
-                <img crossorigin="anonymous" [src]="url" />
-            </div>
+
             }
-            }
+
         </div>
+
     </div>
+
     <div class="col-md-1"></div>
+
 </div>

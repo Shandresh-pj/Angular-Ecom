@@ -189,6 +189,14 @@
     </div>
 
     <!-- Paginator -->
+     <mat-paginator
+  [length]="totalLength"
+  [pageIndex]="currentPageIndex"
+  [pageSize]="pageSize"
+  (page)="onPageChange($event)"
+  [showFirstLastButtons]="true">
+</mat-paginator>
+<!-- 
     <mat-paginator
       [length]="totalLength"
       [pageIndex]="currentPageIndex"
@@ -197,7 +205,7 @@
       (page)="onPageChange($event)"
       aria-label="Select page"
       [showFirstLastButtons]="showFirstLastButtons"
-    ></mat-paginator>
+    ></mat-paginator> -->
   </div>
 </div>
 

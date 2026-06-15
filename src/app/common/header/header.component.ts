@@ -47,6 +47,7 @@ export class HeaderComponent extends Utils implements OnInit {
     currentPanicAlertNotification: any;
     PanicAlert: any;
     ListShowNew: boolean = false;
+    ProfileData:any;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -76,9 +77,9 @@ export class HeaderComponent extends Utils implements OnInit {
                 this.checkAndChangeUrl(event.url);
             }
         });
-        this.activatedRoute.queryParams.subscribe((params) => {
-            this.CompanyId = params['company_id'] || 0;
-        });
+        // this.activatedRoute.queryParams.subscribe((params) => {
+        //     this.CompanyId = params['company_id'] || 0;
+        // });
 
         this.toggleService.isSidebarToggled$.subscribe((isSidebarToggled) => {
             this.isSidebarToggled = isSidebarToggled;
@@ -93,16 +94,16 @@ export class HeaderComponent extends Utils implements OnInit {
             });
     }
     ngOnInit(): void {
-        this.EmployeeList = this.authService.fetchUserDetails();
-        this.FirstName = this.EmployeeList?.Company?.Name || null;
-        if (Array.isArray(this.EmployeeList?.OriginalCompany?.NotifyDriverTo) && this.EmployeeList?.LoggedAs == 'Employee' &&
-            this.EmployeeList.OriginalCompany.NotifyDriverTo.includes(this.EmployeeList.Id))
-            this.getnotify();
+        // this.EmployeeList = this.authService.fetchUserDetails();
+        // this.FirstName = this.EmployeeList?.Company?.Name || null;
+        // if (Array.isArray(this.EmployeeList?.OriginalCompany?.NotifyDriverTo) && this.EmployeeList?.LoggedAs == 'Employee' &&
+        //     this.EmployeeList.OriginalCompany.NotifyDriverTo.includes(this.EmployeeList.Id))
+        //     this.getnotify();
 
-            if (Array.isArray(this.EmployeeList?.OriginalCompany?.PanicAlertTo) &&this.EmployeeList?.LoggedAs == 'Employee' &&
-            this.EmployeeList.OriginalCompany.PanicAlertTo.includes(this.EmployeeList.Id)) {
-            this.getPanicAlert();
-            }
+        //     if (Array.isArray(this.EmployeeList?.OriginalCompany?.PanicAlertTo) &&this.EmployeeList?.LoggedAs == 'Employee' &&
+        //     this.EmployeeList.OriginalCompany.PanicAlertTo.includes(this.EmployeeList.Id)) {
+        //     this.getPanicAlert();
+        //     }
      
     }
     checkAndChangeUrl(url: string): void {
@@ -288,15 +289,16 @@ export class HeaderComponent extends Utils implements OnInit {
     }      
 
 
-    PanicAlertCancel(id: any) {
-        this.commonService.postApi(`PanicAlert/View/${id}`, {}).subscribe(
-          () => {
-            this.PanicAlertClose(); // close modal after API success
-          },
-          (err) => {
-            console.error('Cancel API Failed:', err);
-            this.PanicAlertClose(); // still close popup even if API fails
-          }
-        );
-      }
+    // PanicAlertCancel(id: any) {
+    //     this.commonService.postApi(`PanicAlert/View/${id}`, {}).subscribe(
+    //       () => {
+    //         this.PanicAlertClose(); // close modal after API success
+    //       },
+    //       (err) => {
+    //         console.error('Cancel API Failed:', err);
+    //         this.PanicAlertClose(); // still close popup even if API fails
+    //       }
+    //     );
+    //   }
+
 }

@@ -17,6 +17,8 @@ import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { StatusService } from '../../core/service/status.service';
+import Swal from 'sweetalert2';
+import { environment } from '../../../environments/environment.trypdek.stage';
 
 @Component({
     selector: 'app-setting',
@@ -37,6 +39,9 @@ export class SettingComponent extends Utils implements OnInit {
     selectedRow: any = null;
     statuses: any;
     UsersEdit: any;
+
+    selectedFile: any;
+    imagePreview: any;
     constructor(
         private formBuilder: FormBuilder,
         public themeService: CustomizerSettingsService,
@@ -50,18 +55,15 @@ export class SettingComponent extends Utils implements OnInit {
     ) {
         super();
         this.UsersForm = this.formBuilder.group({
-            Id: [''],
-            FirstName: ['', Validators.required],
-            LastName: [''],
-            MobileNumber: ['', Validators.required],
-            Email: ['',  [Validators.required, Validators.email]],
-            Address: [''],
-            UserType: ['Admin'],
-            Facebook: [''],
-            Twitter:[''],
-            Gplus: [''],
-            MetaKeywords:[''],
-            MetaDescription:[''],
+            id: [''],
+            name: ['', Validators.required],
+            mobilenumber: ['', Validators.required],
+            email: ['',  [Validators.required, Validators.email]],
+            address: [''],
+            status:[''],
+            usertype:[''],
+            logintype:[''],
+            image: ['']
         });
         this.themeService.isToggled$.subscribe((isToggled) => {
             this.isToggled = isToggled;
@@ -90,38 +92,44 @@ export class SettingComponent extends Utils implements OnInit {
     }
 
     ngOnInit(): void {
-    this.getStatues();
+    this.GetProfile();
+    // this.getStatues();
     this.showUsersForm = true;
+}
 
+GetProfile() {
     this.commonService
         .getApi('profile')
         .subscribe((res: any) => {
-            const profile = res?.user || res?.data || res;
-            if (profile) {
-                const nameParts = (profile.name || '').trim().split(' ');
-                const firstName = nameParts[0] || '';
-                const lastName = nameParts.slice(1).join(' ') || '';
 
-                this.UsersEdit = {
-                    Id: profile.id || profile.Id,
-                    FirstName: firstName,
-                    LastName: lastName,
-                    Email: profile.email || profile.Email,
-                    MobileNumber: profile.mobilenumber || profile.MobileNumber,
-                    Address: profile.address || profile.Address,
-                    UserType: profile.usertype || profile.UserType || 'Admin'
-                };
+            const profile = res?.user || res?.data || res;
 
                 this.UsersForm.patchValue({
-                    ...this.UsersEdit
+                    id: profile?.id || '',
+                    name: profile?.name || '',
+                    email: profile?.email || '',
+                    mobilenumber: profile?.mobilenumber || '',
+                    address: profile?.address || '',
+                    usertype: profile?.usertype || 'Super Admin',
+                    images: profile?.image || ''
                 });
-            }
+
+                // Set image preview
+                if (profile?.image) {
+                    this.imagePreview = profile.image.startsWith('http') 
+                        ? profile.image 
+                        : `${environment.domain}${profile.image}`;   // Adjust base URL
+                } else {
+                    this.imagePreview = '';   // No image
+                }
+
+                console.log("Profile Loaded:", this.UsersForm.value);
+        },
+        (error) => {
+            console.error(error);
         });
 }
-    getStatues() {
-        this.statuses = this.statusService.getStatus('COMMON');
-        console.log('checkstatus', this.statuses);
-    }
+
     closeUsersForm() {
         this.showUsersForm = false;
         this.formMode = '';
@@ -129,40 +137,52 @@ export class SettingComponent extends Utils implements OnInit {
          this.UsersForm.enable();
     }
 
-   SubmitUsersForm() {
+SubmitUsersForm() {
+    const formData = new FormData();
 
-    this.UsersForm.patchValue({
-        UserType: 'Admin'
+    Object.keys(this.UsersForm.value).forEach((key: string) => {
+        const value = this.UsersForm.value[key];
+        if (value !== null && value !== undefined) {
+            formData.append(key, value);
+        }
     });
 
-    if (this.UsersForm.invalid) {
-        console.log("Form invalid");
-        return;
+    this.commonService.putApi('profile/update', formData).subscribe({
+        next: (res: any) => {
+            Swal.fire({
+                title: 'Success',
+                text: 'Profile Updated Successfully',
+                icon: 'success'
+            }).then(() => {
+                this.UsersForm.reset();
+                this.GetProfile(); // refresh data
+            });
+        },
+        error: (err) => {
+            Swal.fire({
+                title: 'Error',
+                text: 'Profile Update Failed',
+                icon: 'error'
+            });
+            console.error(err);
+        }
+    });
+}
+
+
+
+onFileSelect(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+        this.UsersForm.patchValue({ image: file });
+
+        // Optional: Preview
+        const reader = new FileReader();
+        reader.onload = () => {
+            this.imagePreview = reader.result as string;
+        };
+        reader.readAsDataURL(file);
     }
+}
 
-    const formVal = this.UsersForm.value;
-    const payload = {
-        name: `${formVal.FirstName || ''} ${formVal.LastName || ''}`.trim(),
-        email: formVal.Email,
-        mobilenumber: formVal.MobileNumber,
-        address: formVal.Address
-    };
-
-    console.log("Sending payload", payload);
-
-    this.commonService.putApi('profile/update', payload)
-        .subscribe(
-            (res: any) => {
-                if (res?.status === 200 || res?.success === true) {
-                    console.log("Profile updated successfully", res);
-                    this.closeUsersForm();
-                } else {
-                    console.log("Update failed", res);
-                }
-            },
-            (err) => {
-                console.error("API Error", err);
-            }
-        );
-    }
 }

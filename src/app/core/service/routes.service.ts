@@ -50,7 +50,10 @@ const STATIC_RESOURCES = [
   { ResourceId: '31', ResourceName: 'Students', ResourceUrl: '/students', children: [] },
   { ResourceId: '32', ResourceName: 'Advertisers', ResourceUrl: '/advertisers', children: [] },
   { ResourceId: '33', ResourceName: 'App Admins', ResourceUrl: '/app-admins', children: [] },
-  { ResourceId: '34', ResourceName: 'Resources', ResourceUrl: '/resources', children: [] }
+  { ResourceId: '34', ResourceName: 'Resources', ResourceUrl: '/resources', children: [] },
+  { ResourceId: '35', ResourceName: 'App Admin', ResourceUrl: '/app-admin', children: [] },
+  { ResourceId: '36', ResourceName: 'E-Products', ResourceUrl: '/e-products', children: [] },
+
 ];
 
 export const webActionFactory = (
@@ -227,9 +230,13 @@ export class ResourcesService {
       '../../pages/app-admins/app-admins.component'   // ← wrapper: userType="AppAdmin"
     ).then((m) => m.AppAdminsComponent);
 
-    //  this.AllComponents['partake-submission'] = import(
-    //   '../../pages/partake-submission/partake-submission.component'
-    //    ).then((m) => m.PartakeSubmissionComponent);   
+    this.AllComponents['app-admin'] = import(
+      '../../pages/app-admin/app-admin.component'
+    ).then((m) => m.AppAdminComponent);
+
+    this.AllComponents['e-products'] = import(
+      '../../pages/e-com-products/e-com-products.component'
+    ).then((m) => m.EComProductsComponent)
 
   }
 
@@ -364,6 +371,6 @@ export class ResourcesService {
 
       // { path: '**', redirectTo: '/404' },
     ]);
-    console.log('SSSEEEEE', this.router);
+    // console.log('SSSEEEEE', this.router);
   }
 }

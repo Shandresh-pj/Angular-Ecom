@@ -1,0 +1,114 @@
+
+
+<!-- Table -->
+
+<mat-card class="apps-to-do-list-card table-style-two mb-25 border-radius d-block bg-white border-0 shadow-none"
+    [class.component-rtl-enabled]="themeService.isRTLEnabled()">
+    <div class="mt-3">
+        @if (!showBannerForm) {
+        <app-mat-table #mattablechild URL="products" [action]="action" [filterOptions]="['All']"
+            [customParams]="{ Type: bannersurl ? 'WEB' : 'APP'}" [columns]="columns" 
+            (add)="Toggleclass($event, 'add')" (view)="Toggleclass($event, 'view')" (edit)="Toggleclass($event, 'edit')"
+            [addedName]="bannersurl ? 'Product' : 'App Slider'"></app-mat-table>
+        } @else {
+        <div class="row">
+            <div class="col-12">
+                <div class="box box-success siteLogo">
+                    <div class="box-body">
+                        <h4 style="margin-bottom: 15px">
+                            {{ formMode === 'add' ? 'Add' : formMode ==='edit' ? 'Edit' : 'View' }}
+                            {{bannersurl ? 'Admin' : 'App Slider'}}
+                        </h4>
+                        <form [formGroup]="UsersForm">
+                            <div class="row mt-2">
+                                <mat-form-field [hidden]="true">
+                                    <input matInput placeholder="" formControlName="id" type="text" />
+                                </mat-form-field>
+
+                                <div class="col-md-4 my-3">
+                                    <div class="form-group">
+                                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                                            <mat-label>Name</mat-label>
+                                            <input matInput placeholder="" formControlName="name" type="text" />
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 my-3">
+                                    <div class="form-group">
+                                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                                            <mat-label>Price</mat-label>
+                                            <input matInput placeholder="" formControlName="price" type="text" />
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 my-3">
+                                    <div class="form-group">
+                                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                                            <mat-label>Barcode</mat-label>
+                                            <input matInput placeholder="" formControlName="barcode" type="text" />
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 my-3">
+                                    <div class="form-group">
+                                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                                            <mat-label>Description</mat-label>
+                                            <input matInput placeholder="" formControlName="description" type="text" />
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+
+                                
+
+                              <div class="col-md-12 mt-3">
+    <label>Main Image</label>
+
+    <app-fileupload
+    [filedname]="'image'"
+    [multiple]="false"
+    [previewUrls]="Bannerurls"
+    [Mode]="formMode"
+    (ImageEmitValue)="onSingleImageReceived($event)"
+    (deleteImage)="onSingleImageDelete()">
+</app-fileupload>
+</div>
+
+
+<div class="col-md-12 mt-3">
+    <label>Gallery Images</label>
+
+  <app-fileupload
+    [filedname]="'images'"
+    [multiple]="true"
+    [previewUrls]="BannerMultiUrls"
+    [Mode]="formMode"
+    (ImageEmitValue)="onMultipleImagesReceived($event)"
+    (deleteImage)="onMultipleImageDelete()">
+</app-fileupload>
+</div>
+                                <div class="col-md-12 mt-3">
+                                    <div class="buttonsset">
+                                        <button type="button" class="btn mt-1 cacelbutton" style="width: 100px"
+                                            (click)="closeBannerForm()">
+                                            Cancel
+                                        </button>
+                                        @if (formMode !== "view") {
+                                        <button type="button" class="btn mt-1 submitbutton" style="width: 100px"
+                                            (click)="SubmitUsersForm(UsersForm)">
+                                            Submit
+                                        </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</mat-card>

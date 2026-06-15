@@ -12,9 +12,10 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { environment } from '../../../environments/environment';
+// import { environment } from '../../../environments/environment';
 import { Location } from '@angular/common';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { environment } from '../../../environments/environment.development';
 @Component({
   selector: 'app-mat-table',
   standalone: true,
@@ -118,73 +119,146 @@ selectedFilter: string = '';
     ];
   }
 
-  async getData(customParams?: any, pageIndex?: number): Promise<void> {
-    
-    if (pageIndex !== undefined) {
-        this.currentPageIndex = pageIndex;
+async getData(customParams?: any, pageIndex?: number): Promise<void> {
+
+  if (pageIndex !== undefined) {
+    this.currentPageIndex = pageIndex;
+  }
+
+  let params = new HttpParams()
+    .set('page', (this.currentPageIndex + 1).toString())
+    .set('limit', this.pageSize.toString());
+
+  if (this.sortBy) {
+    params = params.set('sortBy', this.sortBy);
+    params = params.set('sortDirection', this.sortDirection || 'asc');
+  }
+
+  if (this.searchTerm.trim()) {
+    params = params.set('search', this.searchTerm.trim());
+  }
+
+  if (this.selectedFilter && this.selectedFilter !== 'Filter' && this.selectedFilter !== 'All') {
+    params = params.set('filter', this.selectedFilter);
+  }
+
+  const mergedParams = {
+    ...this.customParams,
+    ...customParams
+  };
+
+  Object.keys(mergedParams || {}).forEach(key => {
+    if (
+      mergedParams[key] !== undefined &&
+      mergedParams[key] !== null &&
+      mergedParams[key] !== ''
+    ) {
+      params = params.set(key, mergedParams[key]);
     }
+  });
 
-    let params = new HttpParams()
-        .set('currentPage', (this.currentPageIndex + 1).toString())
-        .set('pageSize', this.pageSize.toString())
-        .set('maxPages', '10');
+  try {
 
-    if (this.sortBy) {
-        params = params.set('sortBy', this.sortBy);
-        params = params.set('sortDirection', this.sortDirection || 'asc');
-    }
+    this.commonService.getApi(this.URL, params).subscribe({
 
-    if (this.searchTerm.trim()) {
-        params = params.set('search', this.searchTerm.trim());
-    }
+      next: (res: any) => {
 
-    if (this.selectedFilter && this.selectedFilter !== 'Filter') {
-        params = params.set('filter', this.selectedFilter);
-    }
+        console.log('Table Response:', res);
 
-    const mergedParams = { ...this.customParams, ...customParams };
-    if (mergedParams) {
-        Object.keys(mergedParams).forEach(key => {
-            params = params.set(key, mergedParams[key]);
-        });
-    }
+        let listData: any[] = [];
 
-    try {
-        this.commonService.getApi(this.URL, params).subscribe({
-            next: (res: any) => {
-                let listData = [];
-                if (res?.data?.data) {
-                    listData = res.data.data;
-                } else if (res?.products && Array.isArray(res.products)) {
-                    listData = res.products;
-                } else if (Array.isArray(res?.data)) {
-                    listData = res.data;
-                } else if (res?.data?.products) {
-                    listData = res.data.products;
-                } else {
-                    const arrayKey = Object.keys(res || {}).find(
-                        (key) => Array.isArray(res[key]) && key !== 'errors'
-                    );
-                    if (arrayKey) {
-                        listData = res[arrayKey];
-                    }
-                }
+        // Format 1
+        if (res?.data?.data && Array.isArray(res.data.data)) {
 
-                this.dataSource.data = listData || [];
-                this.totalLength = res?.data?.totalItems || res?.totalItems || listData?.length || 0;
-                this.currentPageIndex = (res?.data?.currentPage || res?.currentPage || 1) - 1;
-                this.pageSize = res?.data?.pageSize || res?.pageSize || 10;
-                this.cdr.detectChanges();
-            },
-            error: (err) => {
-                console.error('Error fetching data:', err);
-                this.dataSource.data = [];
-                this.totalLength = 0;
-            }
-        });
-    } catch (error) {
-        console.error('Error in getData:', error);
-    }
+          listData = res.data.data;
+
+        }
+
+        // Format 2
+        else if (res?.products && Array.isArray(res.products)) {
+
+          listData = res.products;
+
+        }
+
+        // Format 3
+        else if (res?.users && Array.isArray(res.users)) {
+
+          listData = res.users;
+
+        }
+
+        // Format 4
+        else if (Array.isArray(res?.data)) {
+
+          listData = res.data;
+
+        }
+
+        // Generic fallback
+        else {
+
+          const arrayKey = Object.keys(res || {}).find(
+            key =>
+              Array.isArray(res[key]) &&
+              key !== 'errors'
+          );
+
+          if (arrayKey) {
+            listData = res[arrayKey];
+          }
+
+        }
+
+        this.dataSource.data = listData || [];
+
+        // Pagination Support
+
+        this.totalLength =
+          res?.pagination?.totalRecords ||
+          res?.data?.totalItems ||
+          res?.totalItems ||
+          listData.length ||
+          0;
+
+        this.currentPageIndex =
+          (
+            res?.pagination?.currentPage ||
+            res?.data?.currentPage ||
+            res?.currentPage ||
+            1
+          ) - 1;
+
+        this.pageSize =
+          res?.pagination?.pageSize ||
+          res?.data?.pageSize ||
+          res?.pageSize ||
+          this.pageSize;
+
+        this.cdr.detectChanges();
+
+      },
+
+      error: (err) => {
+
+        console.error('Error fetching data:', err);
+
+        this.dataSource.data = [];
+        this.totalLength = 0;
+
+      }
+
+    });
+
+  } catch (error) {
+
+    console.error('Error in getData:', error);
+
+    this.dataSource.data = [];
+    this.totalLength = 0;
+
+  }
+
 }
 
 // async getData(customParams?: any): Promise<void> {
@@ -234,11 +308,18 @@ onFilterChange(): void {
     this.currentPageIndex = 0; // Reset to first page
     this.getData(); // Re-fetch with new filter param
   }
-  onPageChange(event: PageEvent|any): void {
-    this.currentPageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
-    this.getData();
-  }
+
+  // onPageChange(event: PageEvent|any): void {
+  //   this.currentPageIndex = event.pageIndex;
+  //   this.pageSize = event.pageSize;
+  //   this.getData();
+  // }
+
+  onPageChange(event: PageEvent): void {
+  this.currentPageIndex = event.pageIndex;
+  this.pageSize = event.pageSize;
+  this.getData();
+}
 
   announceSortChange(sortState: Sort): void {
     console.log('Sort event:', sortState);
@@ -378,9 +459,18 @@ onFilterChange(): void {
     XLSX.utils.book_append_sheet(wb, ws, 'Data');
     XLSX.writeFile(wb, 'table-data.xlsx');
   }
-  getMediaUrl(path: string) {
-  if (!path) return '';
-  return environment.domain + '/' + path || 'Logo/noimage1.jpg';
+ getMediaUrl(path: string): string {
+  if (!path) {
+    return 'Logo/noimage1.png';
+  }
+
+  // Already a full URL
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+
+  // Relative path from API
+  return `${environment.domain}/${path}`;
 }
 truncateText(text: string, limit: number = 16): string {
       if (!text) {
