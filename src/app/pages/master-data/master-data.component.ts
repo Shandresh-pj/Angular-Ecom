@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Utils } from '../../utils';
 import { MatTableComponent } from '../../shared/mat-table/mat-table.component';
 import { MatCard } from '@angular/material/card';
@@ -10,7 +10,7 @@ import { CommonService } from '../../core/service/common.service';
 import { EncryptionService } from '../../core/service/encryption.service';
 import { UserService } from '../../core/service/user.service';
 import { CustomizerSettingsService } from '../../customizer-settings/customizer-settings.service';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { QuillComponent } from '../../shared/quill/quill.component';
 import { environment } from '../../../environments/environment';
@@ -21,7 +21,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-master-data',
   standalone: true,
-  imports: [MatFormField,ReactiveFormsModule,MatFormField, MatLabel, MatTableComponent, MatCard,MatInput,          // ← was missing!
+  imports: [MatError,MatFormField,ReactiveFormsModule,MatFormField, MatLabel, MatTableComponent, MatCard,MatInput,          // ← was missing!
     MatSelect,         // ← for the Status dropdown
     MatOption,],
     templateUrl: './master-data.component.html',

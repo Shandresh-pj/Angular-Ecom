@@ -63,6 +63,16 @@ private CityData = new BehaviorSubject<any[]>([]);
             );
     }
 
+    // put form data service (multipart PUT)
+    public putFormData(resourceURL: string, payloads: Object) {
+        return this.http
+            .put(`${environment.domain}/` + resourceURL, payloads)
+            .pipe(
+                map((res) => res),
+                catchError((error: HttpErrorResponse): any => throwError(error))
+            );
+    }
+
     // put api service
     public putApi(resourceURL: string, payloads: Object) {
         return this.http

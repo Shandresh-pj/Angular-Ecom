@@ -43,6 +43,12 @@
               <mat-form-field [appearance]="formFieldAppearance" class="w-100">
                 <mat-label>First Name</mat-label>
                 <input matInput formControlName="FirstName" type="text" />
+                @if (isFieldValid(UsersForm, 'FirstName', 'required')) {
+                  <mat-error>First Name is required</mat-error>
+                }
+                @if (isFieldValid(UsersForm, 'FirstName', 'minlength')) {
+                  <mat-error>Minimum 2 characters required</mat-error>
+                }
               </mat-form-field>
             </div>
           </div>
@@ -69,6 +75,12 @@
                   formControlName="MobileNumber"
                   type="text"
                 />
+                @if (isFieldValid(UsersForm, 'MobileNumber', 'required')) {
+                  <mat-error>Mobile number is required</mat-error>
+                }
+                @if (isFieldValid(UsersForm, 'MobileNumber', 'minlength')) {
+                  <mat-error>Must be exactly 10 digits</mat-error>
+                }
               </mat-form-field>
             </div>
           </div>
@@ -79,6 +91,12 @@
               <mat-form-field [appearance]="formFieldAppearance" class="w-100">
                 <mat-label>Email</mat-label>
                 <input matInput formControlName="Email" type="email" />
+                @if (isFieldValid(UsersForm, 'Email', 'required')) {
+                  <mat-error>Email is required</mat-error>
+                }
+                @if (isFieldValid(UsersForm, 'Email', 'email')) {
+                  <mat-error>Please enter a valid email address</mat-error>
+                }
               </mat-form-field>
             </div>
           </div>
@@ -90,6 +108,12 @@
                 <mat-form-field [appearance]="formFieldAppearance" class="w-100">
                   <mat-label>Password</mat-label>
                   <input matInput formControlName="Password" type="password" />
+                  @if (isFieldValid(UsersForm, 'Password', 'required')) {
+                    <mat-error>Password is required</mat-error>
+                  }
+                  @if (isFieldValid(UsersForm, 'Password', 'minlength')) {
+                    <mat-error>Minimum 8 characters required</mat-error>
+                  }
                 </mat-form-field>
               </div>
             </div>
@@ -102,6 +126,9 @@
                 <mat-form-field [appearance]="formFieldAppearance" class="w-100">
                   <mat-label>Referral Code</mat-label>
                   <input matInput maxlength="10" formControlName="ReferralCode" type="text" />
+                  @if (isFieldValid(UsersForm, 'ReferralCode', 'required')) {
+                    <mat-error>Referral Code is required</mat-error>
+                  }
                 </mat-form-field>
               </div>
             </div>
@@ -120,6 +147,12 @@
                     formControlName="AadharNumber"
                     type="text"
                   />
+                  @if (isFieldValid(UsersForm, 'AadharNumber', 'required')) {
+                    <mat-error>Aadhar number is required</mat-error>
+                  }
+                  @if (isFieldValid(UsersForm, 'AadharNumber', 'minlength')) {
+                    <mat-error>Must be exactly 12 digits</mat-error>
+                  }
                 </mat-form-field>
               </div>
             </div>
@@ -170,6 +203,9 @@
                     <mat-option value="Female">Female</mat-option>
                     <mat-option value="Other">Other</mat-option>
                   </mat-select>
+                  @if (isFieldValid(UsersForm, 'Gender', 'required')) {
+                    <mat-error>Gender is required</mat-error>
+                  }
                 </mat-form-field>
               </div>
             </div>
@@ -185,6 +221,9 @@
                     <mat-option [value]="status.Id">{{ status.StatusCode }}</mat-option>
                   }
                 </mat-select>
+                @if (isFieldValid(UsersForm, 'StatusId', 'required')) {
+                  <mat-error>Status is required</mat-error>
+                }
               </mat-form-field>
             </div>
           </div>

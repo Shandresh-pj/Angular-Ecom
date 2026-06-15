@@ -30,6 +30,12 @@
                                 </label>
                                 <mat-form-field appearance="outline" class="w-100 font-sans">
                                     <input matInput type="email" placeholder="Enter your email" formControlName="Email" style="font-family: inherit;">
+                                    @if (isFieldValid(LoginForm, 'Email', 'required')) {
+                                        <mat-error>Email is required</mat-error>
+                                    }
+                                    @if (isFieldValid(LoginForm, 'Email', 'email')) {
+                                        <mat-error>Please enter a valid email address</mat-error>
+                                    }
                                 </mat-form-field>
                             </div>
                             <div class="form-group mb-3 text-start">
@@ -41,6 +47,12 @@
                                     <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-checked]="hide" type="button" style="border: none; background: transparent;">
                                         <i class="material-symbols-outlined">{{hide ? 'visibility_off' : 'visibility'}}</i>
                                     </button>
+                                    @if (isFieldValid(LoginForm, 'Password', 'required')) {
+                                        <mat-error>Password is required</mat-error>
+                                    }
+                                    @if (isFieldValid(LoginForm, 'Password', 'minlength')) {
+                                        <mat-error>Minimum 6 characters required</mat-error>
+                                    }
                                 </mat-form-field>
                             </div>
                             <div class="moving-bton">

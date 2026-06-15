@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import Swal from 'sweetalert2';
 import { Utils } from '../../utils';
 import { MatTableComponent } from '../../shared/mat-table/mat-table.component';
 import { MatCard } from '@angular/material/card';
@@ -29,7 +30,8 @@ export class ProductAttributeValueComponent extends Utils implements OnInit {
 
   CompanyId: any;
   isToggled: any;
-  public action = { add: true, edit: true, view: true };
+  @ViewChild('mattablechild') mattablechild!: MatTableComponent;
+  public action = { add: true, edit: true, view: true, delete: true };
   columns: any;
   showProAttributeValueForm = false;
   proattributevalueForm!: FormGroup;
@@ -147,16 +149,13 @@ export class ProductAttributeValueComponent extends Utils implements OnInit {
           ProductAttributeId: this.getdetailproattributevalue?.ProductAttributeId
         });
         this.ProductAttributeValueTranslations().clear();
-        for (let i = 0; i < this.getdetailproattributevalue?.ProductAttributeValueTranslations.length; i++) {
+        for (let lang of this.languages) {
           this.ProductAttributeValueTranslations().push(this.formBuilder.group({
-            LanguageId: this.getdetailproattributevalue?.ProductAttributeValueTranslations[i].LanguagesId,
-            Name: this.getdetailproattributevalue?.ProductAttributeValueTranslations[i].Name,
+            LanguageId: lang.Id,
+            Name: this.getdetailproattributevalue?.Name || this.getdetailproattributevalue?.name || '',
           }));
         }
         this.attriLanguage = {};
-        this.getdetailproattributevalue?.ProductAttributeValueTranslations.map((att: any) => {
-          this.attriLanguage[att?.LanguagesId] = att;
-        })
         if (mode === 'view') {
         this.proattributevalueForm.disable();
       }
@@ -200,6 +199,42 @@ export class ProductAttributeValueComponent extends Utils implements OnInit {
     this.selectedTab = 0;
   }
 
+  onDelete(element: any): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You want to delete this product attribute value?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#602F80',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.commonService.deleteApi(`ProductAttributeValue/${element?.Id || element?.id}`).subscribe({
+          next: () => {
+            Swal.fire({
+              title: 'Deleted!',
+              text: 'Product attribute value deleted successfully.',
+              icon: 'success',
+              confirmButtonColor: '#602F80'
+            });
+            this.mattablechild.getData();
+          },
+          error: (err) => {
+            const errorMessage = err?.error?.message || 'Delete failed. Please try again.';
+            Swal.fire({
+              title: 'Error!',
+              text: errorMessage,
+              icon: 'error',
+              confirmButtonColor: '#602F80'
+            });
+            console.error('Delete failed:', err);
+          }
+        });
+      }
+    });
+  }
 }
 
 

@@ -3,244 +3,181 @@
     [class.component-rtl-enabled]="themeService.isRTLEnabled()"
 >
     <div class="mt-3">
-        @if(!showCategoryForm){
-
-        <!-- ── Table view: filtered by Type via tableCustomParams ─────────── -->
-        <app-mat-table
-            #mattablechild
-            URL="Category/All"
-            [action]="action"
-            [filterOptions]="['All']"
-            [customParams]="tableCustomParams"
-            [columns]="columns"
-            (add)="Toggleclass($event,'add')"
-            (view)="Toggleclass($event,'view')"
-            (edit)="Toggleclass($event,'edit')"
-            [addedName]="pageLabel"
-        ></app-mat-table>
-
+        @if (!showCategoryForm) {
+            <!-- ── Table view ─────────────────────────────────────────────── -->
+            <app-mat-table
+                #mattablechild
+                URL="categories"
+                [action]="action"
+                [filterOptions]="['All']"
+                [columns]="columns"
+                (add)="Toggleclass($event, 'add')"
+                (view)="Toggleclass($event, 'view')"
+                (edit)="Toggleclass($event, 'edit')"
+                (delete)="onDelete($event)"
+                [addedName]="pageLabel"
+            ></app-mat-table>
         } @else {
+            <!-- ── Form view ──────────────────────────────────────────────────── -->
+            <form [formGroup]="categoryForm">
+                <div class="row">
+                    <h4 style="margin-bottom: 15px">
+                        {{
+                            formMode === "add"
+                                ? "Add"
+                                : formMode === "edit"
+                                  ? "Edit"
+                                  : "View"
+                        }}
+                        {{ pageLabel }}
+                    </h4>
 
-        <!-- ── Form view ──────────────────────────────────────────────────── -->
-        <form [formGroup]="categoryForm">
-            <div class="row">
+                    <!-- Hidden Id field -->
+                    <mat-form-field [hidden]="true">
+                        <input matInput formControlName="Id" type="text" />
+                    </mat-form-field>
 
-                <!-- Dynamic heading: "Add Product Category", "Edit Service Category" etc. -->
-                <h4 style="margin-bottom: 15px;">
-                    {{ formMode === 'add' ? 'Add' : formMode === 'edit' ? 'Edit' : 'View' }}
-                    {{ pageLabel }}
-                </h4>
-
-                <!-- Hidden Id field -->
-                <mat-form-field [hidden]="true">
-                    <input matInput placeholder="" formControlName="Id" type="text" />
-                </mat-form-field>
-
-                <!-- Parent Category -->
-                <div class="col-md-6 mb-3">
-                    <div class="form-group">
-                        <mat-form-field [appearance]="formFieldAppearance">
-                            <mat-label>Parent Category</mat-label>
-                            <mat-select formControlName="ParentCategoryId">
-                                <mat-option [value]="0">No Parent</mat-option>
-                                @for(cat of category; track cat){
-                                <mat-option [value]="cat.Id">
-                                    {{ cat?.CategoryTranslations[0]?.Name
-                                        ? cat?.CategoryTranslations[0]?.Name
-                                        : cat?.CategoryTranslations[1]?.Name }}
-                                </mat-option>
+                    <!-- Name -->
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <mat-form-field [appearance]="formFieldAppearance">
+                                <mat-label>Name</mat-label>
+                                <input matInput formControlName="name" type="text" />
+                                @if (isFieldValid(categoryForm, "name", "required")) {
+                                    <mat-error>Name is <strong>required</strong></mat-error>
                                 }
-                            </mat-select>
-                            @if(isFieldValid(categoryForm, 'ParentCategoryId', 'required')){
-                            <mat-error>Category is <strong>required</strong></mat-error>
-                            }
-                        </mat-form-field>
+                            </mat-form-field>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Status -->
-                <div class="col-md-6 mb-3">
-                    <div class="form-group">
-                        <mat-form-field [appearance]="formFieldAppearance">
-                            <mat-label>Status</mat-label>
-                            <mat-select formControlName="StatusId">
-                                @for(status of statuses; track status){
-                                <mat-option [value]="status.Id">{{ status.StatusCode }}</mat-option>
-                                }
-                            </mat-select>
-                            @if(isFieldValid(categoryForm, 'StatusId', 'required')){
-                            <mat-error>Status is <strong>required</strong></mat-error>
-                            }
-                        </mat-form-field>
-                    </div>
-                </div>
-
-<!-- Type -->
-<div class="col-md-6 mb-3">
-    <div class="form-group">
-        <mat-form-field [appearance]="formFieldAppearance">
-            <mat-label>Type</mat-label>
-
-            <mat-select formControlName="Type">
-                <mat-option value="Service">Category</mat-option>
-                <mat-option value="Service">Service</mat-option>
-                <mat-option value="Contest">Contest</mat-option>
-                <mat-option value="Partake">Partake</mat-option>
-            </mat-select>
-
-            @if(isFieldValid(categoryForm, 'Type', 'required')){
-            <mat-error>Type is <strong>required</strong></mat-error>
-            }
-        </mat-form-field>
-    </div>
-</div>
-
-                <!-- Tabs: Description & Images -->
-                <div class="col-md-12 mb-3">
-                    <div class="form-group">
-                        <mat-tab-group #revTabGroup class="tab-group" [(selectedIndex)]="selectedTab">
-
-                            <!-- ── Description Tab ──────────────────────── -->
-                            <mat-tab label="Description">
-                                <mat-tab-group>
-                                    @for(lang of languages; track lang){
-                                    <mat-tab [label]="lang.Name">
-                                        <section class="tab-container mt-4">
-                                            @for(item of CategoryTranslations().controls; track item; let i = $index){
-                                            <div formArrayName="CategoryTranslations">
-                                                <div [formGroupName]="i">
-                                                    @if(lang.Id == item.value['LanguageId']){
-                                                    <div>
-                                                        <!-- Hidden LanguageId -->
-                                                        <mat-form-field [hidden]="true">
-                                                            <input matInput formControlName="LanguageId" type="text" />
-                                                        </mat-form-field>
-
-                                                        <!-- Name -->
-                                                        <div class="col-md-12 mb-3">
-                                                            <mat-form-field
-                                                                class="w-100 border_input"
-                                                                [appearance]="formFieldAppearance"
-                                                            >
-                                                                <mat-label class="mb-0">Name</mat-label>
-                                                                <input matInput formControlName="Name" type="text" />
-                                                            </mat-form-field>
-                                                        </div>
-
-                                                        <!-- Description -->
-                                                        <div class="col-md-12 mb-3">
-                                                            <div class="form-group">
-                                                                <mat-form-field
-                                                                    class="w-100 border_input"
-                                                                    [appearance]="formFieldAppearance"
-                                                                >
-                                                                    <mat-label class="mb-0">Description</mat-label>
-                                                                    <textarea
-                                                                        multiline="true"
-                                                                        [value]="catLanguage[lang.Id]?.Description"
-                                                                        matInput
-                                                                        formControlName="Description"
-                                                                        type="text"
-                                                                    ></textarea>
-                                                                </mat-form-field>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    }
-                                                </div>
-                                            </div>
-                                            }
-                                        </section>
-                                    </mat-tab>
+                    <!-- Parent Category -->
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <mat-form-field [appearance]="formFieldAppearance">
+                                <mat-label>Parent Category</mat-label>
+                                <mat-select formControlName="parent_id">
+                                    <mat-option [value]="0">No Parent</mat-option>
+                                    @for (cat of category; track cat) {
+                                        <mat-option [value]="cat.id">
+                                            {{ cat?.name }}
+                                        </mat-option>
                                     }
-                                </mat-tab-group>
-                            </mat-tab>
+                                </mat-select>
+                                @if (isFieldValid(categoryForm, "parent_id", "required")) {
+                                    <mat-error>Category is <strong>required</strong></mat-error>
+                                }
+                            </mat-form-field>
+                        </div>
+                    </div>
 
-                            <!-- ── Category Images Tab ─────────────────── -->
-                            <mat-tab label="Category Images">
-                                <div class="row mt-3">
-                                    <div class="col-md-1"></div>
-                                    <div class="col-md-10">
-                                        <div class="row">
+                    <!-- Status -->
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <mat-form-field [appearance]="formFieldAppearance">
+                                <mat-label>Status</mat-label>
+                                <mat-select formControlName="StatusId">
+                                    @for (status of statuses; track status) {
+                                        <mat-option [value]="status.Id">{{
+                                            status.StatusCode
+                                        }}</mat-option>
+                                    }
+                                </mat-select>
+                                @if (isFieldValid(categoryForm, "StatusId", "required")) {
+                                    <mat-error>Status is <strong>required</strong></mat-error>
+                                }
+                            </mat-form-field>
+                        </div>
+                    </div>
 
-                                            <!-- Upload area -->
-                                            <div class="col-md-12">
-                                                <div class="border-dased">
-                                                    <input
-                                                        type="file"
-                                                        class="file-input"
-                                                        (change)="detectFiles($event)"
-                                                        #fileUpload
-                                                    />
-                                                    <div class="file-upload">
-                                                        <div class="upload-area">
-                                                            <div class="upload-text mt-4">Click to Upload Images</div>
-                                                            <button
-                                                                class="upload-btn mb-3"
-                                                                (click)="fileUpload.click()"
-                                                                [disabled]="formMode == 'view'"
-                                                            >
-                                                                <span class="icon-wrapper">Upload a file</span>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                    <!-- Description -->
+                    <div class="col-md-12 mb-3">
+                        <div class="form-group">
+                            <mat-form-field
+                                class="w-100 border_input"
+                                [appearance]="formFieldAppearance"
+                            >
+                                <mat-label class="mb-0">Description</mat-label>
+                                <textarea
+                                    matInput
+                                    formControlName="description"
+                                    type="text"
+                                ></textarea>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <!-- Category Image -->
+                    <div class="col-md-12 mb-3">
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="border-dased">
+                                    <input
+                                        type="file"
+                                        class="file-input"
+                                        (change)="detectFiles($event)"
+                                        #fileUpload
+                                    />
+                                    <div class="file-upload">
+                                        <div class="upload-area">
+                                            <div class="upload-text mt-4">
+                                                Click to Upload Image
                                             </div>
-
-                                            <!-- Image previews -->
-                                            @for(url of urls; track url){
-                                            <div class="col-12 col-md-4 mt-3">
-                                                <div class="image-preview">
-                                                    @if(formMode !== 'view'){
-                                                    <button
-                                                        type="button"
-                                                        class="delete-btn"
-                                                        (click)="deleteCategoryImage(url)"
-                                                    >
-                                                        <mat-icon class="matdeleteicon">delete</mat-icon>
-                                                    </button>
-                                                    }
-                                                    <img crossorigin="anonymous" [src]="url" alt="preview" />
-                                                </div>
-                                            </div>
-                                            }
-
+                                            <button
+                                                class="upload-btn mb-3"
+                                                (click)="fileUpload.click()"
+                                                [disabled]="formMode == 'view'"
+                                            >
+                                                <span class="icon-wrapper">Upload a file</span>
+                                            </button>
                                         </div>
                                     </div>
-                                    <div class="col-md-1"></div>
                                 </div>
-                            </mat-tab>
+                            </div>
 
-                        </mat-tab-group>
+                            @for (url of urls; track url) {
+                                <div class="col-12 col-md-4 mt-3">
+                                    <div class="image-preview">
+                                        @if (formMode !== "view") {
+                                            <button
+                                                type="button"
+                                                class="delete-btn"
+                                                (click)="deleteCategoryImage(url)"
+                                            >
+                                                <mat-icon class="matdeleteicon">delete</mat-icon>
+                                            </button>
+                                        }
+                                        <img crossorigin="anonymous" [src]="url" alt="preview" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="col-md-12 mt-3">
+                        <div class="buttonsset">
+                            <button
+                                type="button"
+                                class="btn mt-1 cacelbutton"
+                                style="width: 100px"
+                                (click)="closeCategoryForm()"
+                            >
+                                Cancel
+                            </button>
+                            @if (formMode !== "view") {
+                                <button
+                                    type="button"
+                                    class="btn mt-1 submitbutton"
+                                    style="width: 100px"
+                                    (click)="SubmitCategoryForm(categoryForm)"
+                                >
+                                    Submit
+                                </button>
+                            }
+                        </div>
                     </div>
                 </div>
-
-                <!-- Action Buttons -->
-                <div class="col-md-12 mt-3">
-                    <div class="buttonsset">
-                        <button
-                            type="button"
-                            class="btn mt-1 cacelbutton"
-                            style="width: 100px;"
-                            (click)="closeCategoryForm()"
-                        >
-                            Cancel
-                        </button>
-                        @if(formMode !== 'view'){
-                        <button
-                            type="button"
-                            class="btn mt-1 submitbutton"
-                            style="width: 100px;"
-                            (click)="SubmitCategoryForm(categoryForm)"
-                        >
-                            Submit
-                        </button>
-                        }
-                    </div>
-                </div>
-
-            </div>
-        </form>
+            </form>
         }
     </div>
 </mat-card>

@@ -44,6 +44,10 @@ export class ProductsComponent extends Utils implements OnInit {
   producturls: any[] = [];
   productsfileName: any;
   productsImageFile: any;
+  productsImageFiles: File[] = [];
+  videoFile: File | null = null;
+  videoFileName: string = '';
+  videoUrl: string = '';
   productTypes: any;
   productTypeKeys: any;
   statuses: any;
@@ -79,13 +83,14 @@ export class ProductsComponent extends Utils implements OnInit {
     super();
     this.productsForm = this.formBuilder.group({
       Id: [''],
-      Code: ['', Validators.required],
-      ResellerId: ['', Validators.required],
+      Code: [''],
+      ResellerId: [''],
       CategoryIds: ['', Validators.required],
       ProductType: ['', Validators.required],
-      Points: ['', Validators.required],
-      IsAllowNegativeStock: ['', Validators.required],
+      IsAllowNegativeStock: [false],
       StockInHand: ['', Validators.required],
+      price: ['', Validators.required],
+      barcode: [''],
       ProductTranslations: this.formBuilder.array([]),
       ProductVariants: this.formBuilder.array([]),
     });
@@ -118,6 +123,33 @@ export class ProductsComponent extends Utils implements OnInit {
             return element.ProductTranslations[0]?.Name || element.ProductTranslations[1]?.Name || '';
           }
           return element.name || '';
+        }
+      },
+      {
+        columnDef: 'Category',
+        header: 'Category',
+        cell: (element: any) => {
+          if (!element?.category) return '';
+          let ids: any[] = [];
+          try {
+            const parsed = JSON.parse(element.category);
+            ids = Array.isArray(parsed) ? parsed : [parsed];
+          } catch {
+            if (typeof element.category === 'string') {
+              ids = element.category.split(',').map((s: string) => s.trim());
+            } else if (typeof element.category === 'number') {
+              ids = [element.category];
+            } else {
+              ids = [element.category];
+            }
+          }
+          return ids
+            .map(id => {
+              const catObj = this.category?.find((c: any) => String(c.id || c.Id) === String(id));
+              return catObj ? catObj.Name || catObj.name : '';
+            })
+            .filter(Boolean)
+            .join(', ') || element.category;
         }
       },
       {
@@ -194,13 +226,14 @@ export class ProductsComponent extends Utils implements OnInit {
   }
 
   getCategory() {
-    const params = { Feature: 'true', All: 'true' };
-    this.commonService.getApi('Category/All', params).subscribe((res: any) => {
-      this.category = res?.data?.data.map((item: any) => ({
-        ...item,
-        Name: item?.CategoryTranslations?.[0]?.Name
-      }));
-      console.log('category', this.category);
+    this.commonService.getApi('categories').subscribe({
+      next: (res: any) => {
+        this.category = Array.isArray(res?.data) ? res.data : [];
+        console.log('category', this.category);
+      },
+      error: () => {
+        this.category = [];
+      }
     });
   }
 
@@ -264,7 +297,7 @@ export class ProductsComponent extends Utils implements OnInit {
   RemoveVarients(index: any) {
     const control = this.ProductVariants().at(index);
     console.log('checkwork', control);
-    if (control.value.ProductVariantCode) {
+    if (control.value.barcode || control.value.ProductVariantCode) {
       // existing record → mark delete
       control.patchValue({ Flag: 'D' });
     } else {
@@ -287,7 +320,7 @@ export class ProductsComponent extends Utils implements OnInit {
   createVarients(data: any = {}): FormGroup {
     return this.formBuilder.group({
       Id: [data.Id || ''],
-      ProductVariantCode: [data.ProductVariantCode || ''],
+      barcode: [data.barcode || data.ProductVariantCode || ''],
       Price: [data.Price || ''],
       Stock: [data.Stock || ''],
       ProductAttributeId: [data.ProductAttributeId || ''],
@@ -300,6 +333,10 @@ export class ProductsComponent extends Utils implements OnInit {
     this.formMode = mode;
     this.showProductsForm = true;
     this.producturls = [];
+    this.productsImageFiles = [];
+    this.videoFile = null;
+    this.videoFileName = '';
+    this.videoUrl = '';
     // FIX: reset per-row map whenever the form opens
     this.getproductattributevalues = {};
 
@@ -307,11 +344,37 @@ export class ProductsComponent extends Utils implements OnInit {
       this.commonService.getApi(`products/${value?.Id || value?.id}`).subscribe((res: any) => {
         this.getdetailproducts = res?.product || res?.data || res;
 
-        if (this.getdetailproducts?.UploadImage) {
-          this.producturls.push(`${environment.domain}/${this.getdetailproducts.UploadImage}`);
+        const domainUrl = environment.domain.replace('/api', '');
+        if (this.getdetailproducts?.image) {
+          this.producturls.push(`${domainUrl}${this.getdetailproducts.image}`);
+        }
+        if (Array.isArray(this.getdetailproducts?.images)) {
+          this.getdetailproducts.images.forEach((img: string) => {
+            const fullUrl = `${domainUrl}${img}`;
+            if (!this.producturls.includes(fullUrl)) {
+              this.producturls.push(fullUrl);
+            }
+          });
         }
 
-        const categoryIds = this.getdetailproducts?.ProductCategory?.map((pc: any) => pc.CategoryId) || [];
+        if (this.getdetailproducts?.video) {
+          this.videoUrl = `${domainUrl}${this.getdetailproducts.video}`;
+          this.videoFileName = this.getdetailproducts.video.split('/').pop() || 'video';
+        }
+
+        let categoryIds: any[] = [];
+        if (this.getdetailproducts?.category) {
+          try {
+            const parsed = JSON.parse(this.getdetailproducts.category);
+            categoryIds = Array.isArray(parsed) ? parsed.map(Number) : [Number(parsed)];
+          } catch {
+            if (typeof this.getdetailproducts.category === 'string') {
+              categoryIds = this.getdetailproducts.category.split(',').map((s: string) => Number(s.trim())).filter((n: number) => !isNaN(n));
+            } else {
+              categoryIds = [Number(this.getdetailproducts.category)];
+            }
+          }
+        }
         console.log('Extracted Category IDs:', categoryIds);
 
         if (this.getdetailproducts?.ProductType?.toLowerCase() === 'variant') {
@@ -323,7 +386,10 @@ export class ProductsComponent extends Utils implements OnInit {
         this.productsForm.patchValue({
           ...this.getdetailproducts,
           Id: this.getdetailproducts?.id || this.getdetailproducts?.Id,
-          CategoryIds: categoryIds
+          CategoryIds: categoryIds,
+          StockInHand: this.getdetailproducts?.stock ?? this.getdetailproducts?.StockInHand ?? '',
+          price: this.getdetailproducts?.price ?? '',
+          barcode: this.getdetailproducts?.barcode ?? ''
         });
 
         // Rebuild translations
@@ -354,6 +420,7 @@ export class ProductsComponent extends Utils implements OnInit {
               this.createVarients({
                 Id: v.Id,
                 ProductVariantCode: v.ProductVariantCode,
+                barcode: v.ProductVariantCode || v.barcode || '',
                 Price: v.Price,
                 Stock: v.Stock,
                 ProductAttributeId: attrId,
@@ -389,14 +456,11 @@ export class ProductsComponent extends Utils implements OnInit {
   }
 
   ProductdetectFiles(event: any) {
-    const file: File = event.target.files[0];
-    this.productsfileName = file.name;
-    this.productsImageFile = file;
-    this.producturls = [];
-    let files1 = event.target.files;
+    const files = Array.from(event.target.files as FileList);
+    this.productsImageFiles = [...this.productsImageFiles, ...files];
     this.deletedImage = false;
-    if (files1) {
-      for (let file of files1) {
+    if (files) {
+      for (let file of files) {
         let reader = new FileReader();
         reader.onload = (e: any) => {
           this.producturls.push(e.target.result);
@@ -407,8 +471,27 @@ export class ProductsComponent extends Utils implements OnInit {
   }
 
   deleteproductImage(url: string) {
-    this.producturls = this.producturls.filter(u => u !== url);
+    const idx = this.producturls.indexOf(url);
+    if (idx !== -1) {
+      this.producturls.splice(idx, 1);
+      if (this.productsImageFiles[idx]) {
+        this.productsImageFiles.splice(idx, 1);
+      }
+    }
     this.deletedImage = true;
+  }
+
+  VideoDetectFile(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.videoFile = file;
+      this.videoFileName = file.name;
+      let reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.videoUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   getStatues() {
@@ -481,16 +564,28 @@ export class ProductsComponent extends Utils implements OnInit {
     if (form.valid) {
       const formData = new FormData();
 
-      if (this.productsImageFile) {
-        formData.append('UploadImage_', this.productsImageFile);
-        console.log('UploadImage', this.productsImageFile);
+      if (this.productsImageFiles.length > 0) {
+        formData.append('image', this.productsImageFiles[0]);
+        this.productsImageFiles.forEach((file: File) => {
+          formData.append('images', file);
+        });
+      }
+      if (this.videoFile) {
+        formData.append('video', this.videoFile);
       }
       if (this.deletedImage) {
         formData.append('UploadImage', '');
       }
 
+      const mappedVariants = (form.value.ProductVariants || []).map((v: any) => ({
+        ...v,
+        ProductVariantCode: v.barcode || v.ProductVariantCode || ''
+      }));
+
       const payload = {
         ...form.value,
+        ProductVariants: mappedVariants,
+        stock: form.value.StockInHand,
         ProductFeatures: [],
         ProductCombos: [],
         BrandIds: []
@@ -552,14 +647,23 @@ export class ProductsComponent extends Utils implements OnInit {
     }
 
     this.productsForm.patchValue({
-      Points: 0,
-      ProductTranslations: this.languageIds
+      ProductTranslations: this.languageIds,
+      price: '',
+      barcode: ''
     });
 
     this.producturls = [];
-    this.productsImageFile = null;
-    this.productsfileName = null;
+    this.productsImageFiles = [];
+    this.videoFile = null;
+    this.videoFileName = '';
+    this.videoUrl = '';
     this.selectedTab = 0;
     this.deletedImage = false;
+  }
+
+  deleteVideoFile() {
+    this.videoFile = null;
+    this.videoFileName = '';
+    this.videoUrl = '';
   }
 }

@@ -56,17 +56,20 @@
             </label>
             <mat-form-field>
                 <mat-label> Pincode </mat-label>
-                <input 
-                matInput 
-                formControlName="Pincode" 
-                type="text" 
-                maxlength="7" 
-                pattern="^[0-9]*$" 
+                <input
+                matInput
+                formControlName="Pincode"
+                type="text"
+                maxlength="7"
                 placeholder="Enter Pincode"
                 (keypress)="numericOnly($event)"
               />
-              
-
+              @if (addressForm.get('Pincode')?.hasError('maxlength') && addressForm.get('Pincode')?.touched) {
+                  <mat-error>Maximum 7 characters allowed</mat-error>
+              }
+              @if (addressForm.get('Pincode')?.hasError('pattern') && addressForm.get('Pincode')?.touched) {
+                  <mat-error>Pincode must contain only digits</mat-error>
+              }
             </mat-form-field>
         </div>
     </div>
@@ -92,6 +95,9 @@
             <mat-form-field>
                 <mat-label> Latitude </mat-label>
                 <input matInput formControlName="Latitude" (keypress)="numericOnly($event)" />
+                @if (addressForm.get('Latitude')?.hasError('required') && addressForm.get('Latitude')?.touched) {
+                    <mat-error>Latitude is required</mat-error>
+                }
             </mat-form-field>
         </div>
     </div>
@@ -103,6 +109,9 @@
             <mat-form-field>
                 <mat-label> Longitude </mat-label>
                 <input matInput formControlName="Longitude" (keypress)="numericOnly($event)"/>
+                @if (addressForm.get('Longitude')?.hasError('required') && addressForm.get('Longitude')?.touched) {
+                    <mat-error>Longitude is required</mat-error>
+                }
             </mat-form-field>
         </div>
     </div>

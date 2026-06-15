@@ -18,10 +18,21 @@ export class StatusService {
  
 
   getStatues( payload?:any ){
-    return of({ data: { data: [] } })
+    return this.http
+      .get(`${environment.domain}/Status/All`)
       .pipe(
         map((response:any) => {
+          const list = response?.data?.data || [];
+          this.Statuses = list.reduce((acc: any, s: any) => {
+            const key = s.StatusFor || 'COMMON';
+            (acc[key] = acc[key] || []).push(s);
+            return acc;
+          }, {});
           return this.Statuses;
+        }),
+        catchError(() => {
+          this.Statuses = {};
+          return of(this.Statuses);
         }),
         shareReplay ()
       )

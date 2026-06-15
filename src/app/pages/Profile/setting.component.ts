@@ -99,7 +99,7 @@ export class SettingComponent extends Utils implements OnInit {
 
 GetProfile() {
     this.commonService
-        .getApi('profile')
+        .getApi('profile/all')
         .subscribe((res: any) => {
 
             const profile = res?.user || res?.data || res;

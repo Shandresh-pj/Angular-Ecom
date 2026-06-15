@@ -1,7 +1,0 @@
-<mat-card class="apps-to-do-list-card table-style-two mb-25 border-radius d-block bg-white border-0 shadow-none"
-    [class.component-rtl-enabled]="themeService.isRTLEnabled()">
-    <div class="mt-3">
-        <app-mat-table #mattablechild URL="User/Points/All" [action]="action" [filterOptions]="['All']"
-            [columns]="columns" (add)="Toggleclass($event,'add')" (view)="Toggleclass($event,'view')"
-            (edit)="Toggleclass($event,'edit')" [addedName]="'Points'"></app-mat-table>
-    </div></mat-card>

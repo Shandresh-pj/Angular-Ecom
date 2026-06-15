@@ -123,6 +123,7 @@
               } @else if (col.columnDef === 'PreviewImage' || col.columnDef === 'UploadImage') {
                 <div style="width: 80px;">
               <img [src]="getMediaUrl(col.cell(element))"
+                width="70" height="70"
                 style="object-fit: cover; border-radius: 6px" alt="no image" onerror="this.onerror=null; this.src='Logo/noimage1.png';"
                 />
                 </div>

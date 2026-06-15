@@ -27,7 +27,7 @@ export class ConfiglangService {
   }
 
   loadAppConfig(): Observable<boolean> {
-    this.CreateConfig('lang', [{ code: 'en', name: 'English' }]);
+    this.CreateConfig('lang', [{ Id: 1, Name: 'English', code: 'en' }]);
     return of(true);
   }
 }

@@ -18,40 +18,21 @@
                     <input matInput placeholder="" formControlName="Id" type="text" />
                 </mat-form-field>
 
-                <!-- Product SKU -->
-                <div class="col-md-4 mb-3">
-                    <div class="form-group">
-                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
-                            <mat-label>Product SKU</mat-label>
-                            <input matInput placeholder="" formControlName="Code" type="text" />
-                        </mat-form-field>
-                    </div>
-                </div>
 
-                <!-- Reseller Name -->
-                <div class="col-md-4 mb-3">
-                    <div class="form-group">
-                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
-                            <mat-label>Reseller Name</mat-label>
-                            <mat-select formControlName="ResellerId">
-                                @for(sel of getresellers; track sel){
-                                <mat-option [value]="sel.Id">{{sel?.FirstName}} {{sel?.LastName}}</mat-option>
-                                }
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                </div>
 
                 <!-- Category -->
                 <div class="col-md-4 mb-3">
                     <div class="form-group">
                         <mat-form-field [appearance]="formFieldAppearance">
                             <mat-label>Category</mat-label>
-                            <mat-select formControlName="CategoryIds" multiple>
+                            <mat-select formControlName="CategoryIds">
                                 @for(cat of category; track cat){
-                                <mat-option [value]="cat.Id">{{cat?.Name}}</mat-option>
+                                <mat-option [value]="cat.id || cat.Id">{{cat?.name || cat?.Name}}</mat-option>
                                 }
                             </mat-select>
+                            @if (isFieldValid(productsForm, 'CategoryIds', 'required')) {
+                                <mat-error>Category is required</mat-error>
+                            }
                         </mat-form-field>
                     </div>
                 </div>
@@ -65,33 +46,14 @@
                                 <mat-option value='Single'>Single</mat-option>
                                 <mat-option value='Variant'>Variant</mat-option>
                             </mat-select>
+                            @if (isFieldValid(productsForm, 'ProductType', 'required')) {
+                                <mat-error>Product type is required</mat-error>
+                            }
                         </mat-form-field>
                     </div>
                 </div>
 
-                <!-- Points -->
-                <div class="col-md-4 mb-3">
-                    <div class="form-group">
-                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
-                            <mat-label>Points</mat-label>
-                            <input matInput placeholder="" (keypress)="numericOnly($event)"
-                                formControlName="Points" type="text" />
-                        </mat-form-field>
-                    </div>
-                </div>
 
-                <!-- IsAllow Negative Stock -->
-                <div class="col-md-4 mb-3">
-                    <div class="form-group">
-                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
-                            <mat-label>IsAllow Negative Stock</mat-label>
-                            <mat-select formControlName="IsAllowNegativeStock">
-                                <mat-option [value]="true">Yes</mat-option>
-                                <mat-option [value]="false">No</mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                </div>
 
                 <!-- Stock In Hand -->
                 <div class="col-md-4 mb-3">
@@ -100,9 +62,37 @@
                             <mat-label>Stock In Hand</mat-label>
                             <input matInput placeholder="" formControlName="StockInHand" type="text"
                                 (keypress)="numericOnly($event)" />
+                            @if (isFieldValid(productsForm, 'StockInHand', 'required')) {
+                                <mat-error>Stock in hand is required</mat-error>
+                            }
                         </mat-form-field>
                     </div>
                 </div>
+
+                <!-- Price -->
+                <div class="col-md-4 mb-3">
+                    <div class="form-group">
+                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                            <mat-label>Price</mat-label>
+                            <input matInput placeholder="" formControlName="price" type="text" (keypress)="numericOnly($event)" />
+                            @if (isFieldValid(productsForm, 'price', 'required')) {
+                                <mat-error>Price is required</mat-error>
+                            }
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <!-- Barcode -->
+                <div class="col-md-4 mb-3">
+                    <div class="form-group">
+                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                            <mat-label>Barcode</mat-label>
+                            <input matInput placeholder="" formControlName="barcode" type="text" />
+                        </mat-form-field>
+                    </div>
+                </div>
+
+
 
                 <!-- Tabs: Description | Product Images | Product Variants -->
                 <div class="col-md-12 mb-3">
@@ -129,6 +119,10 @@
                                                                 [appearance]="formFieldAppearance">
                                                                 <mat-label class="mb-0">Name</mat-label>
                                                                 <input matInput formControlName="Name" type="text" />
+                                                                @if (productsForm.get('ProductTranslations.' + i + '.Name')?.hasError('required')
+                                                                    && productsForm.get('ProductTranslations.' + i + '.Name')?.touched) {
+                                                                    <mat-error>Name is required</mat-error>
+                                                                }
                                                             </mat-form-field>
                                                         </div>
 
@@ -161,7 +155,7 @@
                                             <div class="col-md-12">
                                                 <div class="border-dased">
                                                     <input type="file" class="file-input"
-                                                        (change)="ProductdetectFiles($event)" #fileUpload />
+                                                        (change)="ProductdetectFiles($event)" #fileUpload multiple />
                                                     <div class="file-upload">
                                                         <div class="upload-area">
                                                             <div class="upload-text mt-4">Click to Upload Images</div>
@@ -184,6 +178,47 @@
                                                     </button>
                                                     }
                                                     <img crossorigin="anonymous" [src]="url" alt="preview" />
+                                                </div>
+                                            </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                            </mat-tab>
+
+                            <!-- ── Product Video Tab ── -->
+                            <mat-tab label='Product Video'>
+                                <div class="row mt-3">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-10">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="border-dased">
+                                                    <input type="file" class="file-input"
+                                                        (change)="VideoDetectFile($event)" #videoUpload accept="video/*" />
+                                                    <div class="file-upload">
+                                                        <div class="upload-area">
+                                                            <div class="upload-text mt-4">Click to Upload Video</div>
+                                                            <button class="upload-btn mb-3"
+                                                                (click)="videoUpload.click()"
+                                                                [disabled]="formMode == 'view'">
+                                                                <span class="icon-wrapper">Upload a file</span>
+                                                             </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @if (videoUrl) {
+                                            <div class="col-12 col-md-4 mt-3">
+                                                <div class="image-preview">
+                                                    @if(formMode !== 'view'){
+                                                    <button type="button" class="delete-btn"
+                                                        (click)="deleteVideoFile()">
+                                                        <mat-icon class="matdeleteicon">delete</mat-icon>
+                                                    </button>
+                                                    }
+                                                    <video crossorigin="anonymous" [src]="videoUrl" controls style="width: 100%; border-radius: 6px;"></video>
                                                 </div>
                                             </div>
                                             }
@@ -240,24 +275,15 @@
                                                 </mat-form-field>
                                             </div>
 
-                                            <!-- Points -->
+                                            <!-- Barcode -->
                                             <div class="col-md-4 mt-3">
                                                 <mat-form-field class="w-100 border_input"
                                                     [appearance]="formFieldAppearance">
-                                                    <mat-label class="mb-0">Points</mat-label>
-                                                    <input matInput type="text" formControlName="Price">
-                                                </mat-form-field>
-                                            </div>
-
-                                            <!-- Product Variant Code -->
-                                            <div class="col-md-4 mt-3">
-                                                <mat-form-field class="w-100 border_input"
-                                                    [appearance]="formFieldAppearance">
-                                                    <mat-label class="mb-0">Product Variant Code</mat-label>
-                                                    <input matInput type="text" formControlName="ProductVariantCode">
-                                                    @if(isFieldValid(productsForm, 'ProductVariantCode', 'required')){
+                                                    <mat-label class="mb-0">Barcode</mat-label>
+                                                    <input matInput type="text" formControlName="barcode">
+                                                    @if(isFieldValid(item, 'barcode', 'required')){
                                                     <mat-error>
-                                                        ProductVariantCode is <strong>required</strong>
+                                                        Barcode is <strong>required</strong>
                                                     </mat-error>
                                                     }
                                                 </mat-form-field>

@@ -28,33 +28,44 @@
                                  <mat-option value='Views'>Views</mat-option>
                                  <mat-option value='Age'>Age</mat-option>
                                  <mat-option value='Install'>Install</mat-option>
-                                  <!-- <mat-option value='Variant'>Variant</mat-option> -->
                       </mat-select>
+                      @if (isFieldValid(masterdataForm, 'MasterType', 'required')) {
+                          <mat-error>Master type is required</mat-error>
+                      }
                         </mat-form-field>
                     </div>
                 </div>
-                  
+
                   <div class="col-md-6 mt-3">
                     <mat-form-field [appearance]="formFieldAppearance" class="w-100">
                       <mat-label>Code</mat-label>
                       <input matInput formControlName="Code" />
+                      @if (isFieldValid(masterdataForm, 'Code', 'required')) {
+                          <mat-error>Code is required</mat-error>
+                      }
                     </mat-form-field>
                   </div>
-                  
+
                   <div class="col-md-6 mt-3">
                     <mat-form-field [appearance]="formFieldAppearance" class="w-100">
                       <mat-label>Value</mat-label>
                       <input matInput  formControlName="Value" />
+                      @if (isFieldValid(masterdataForm, 'Value', 'required')) {
+                          <mat-error>Value is required</mat-error>
+                      }
                     </mat-form-field>
                   </div>
-                  
+
                   <div class="col-md-6 mt-3">
                     <mat-form-field [appearance]="formFieldAppearance" class="w-100">
                       <mat-label>Position</mat-label>
                       <input matInput type="number" formControlName="Position" />
+                      @if (isFieldValid(masterdataForm, 'Position', 'required')) {
+                          <mat-error>Position is required</mat-error>
+                      }
                     </mat-form-field>
                   </div>
-                  
+
                   <div class="col-md-6 mt-3">
                     <mat-form-field [appearance]="formFieldAppearance" class="w-100">
                       <mat-label>Status</mat-label>
@@ -62,6 +73,9 @@
                         <mat-option value="Active">Active</mat-option>
                         <mat-option value="Inactive">Inactive</mat-option>
                       </mat-select>
+                      @if (isFieldValid(masterdataForm, 'Status', 'required')) {
+                          <mat-error>Status is required</mat-error>
+                      }
                     </mat-form-field>
                   </div>
 

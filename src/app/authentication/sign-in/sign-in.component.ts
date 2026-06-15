@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+﻿import { Component, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +12,7 @@ import { ResourcesService } from '../../core/service/routes.service';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
 import { environment } from '../../../environments/environment';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-sign-in',
@@ -41,7 +42,7 @@ export class SignInComponent extends Utils {
       super();
       this.LoginForm = this.formBuilder.group({
         Email: ['', [Validators.required, Validators.email]],
-        Password: ['', Validators.required],
+        Password: ['', [Validators.required, Validators.minLength(6)]],
       });
 
       this.themeService.isToggled$.subscribe(isToggled => {
@@ -75,23 +76,23 @@ export class SignInComponent extends Utils {
 
     console.log('payload', payload);
 
-    this.commonService.postApi('login', payload).subscribe(
-      (res: any) => {
-        if (res?.status === 200 || res?.success === true) {
-          console.log('Login success', res);
-          const userDetails = res['response'] || res['data'] || res;
-          this.authService.storeUserDetails(userDetails);
-          this.resourceService.getResources().then((resources) => {
-            console.log('Resources reloaded after login:', resources);
-            this.router.navigate(['/dashboard']);
-          });
-        } else {
-          this.errorAlert(res?.message || 'Login failed');
-        }
-      },
-      (error: any) => {
-        this.errorAlert(error);
-      }
+    this.commonService.postApi('auth/login', payload).subscribe(
+        (res: any) => {
+            if (res?.status === 200 || res?.success === true) {
+                console.log('Login success', res);
+                const userDetails = res['response'] || res['data'] || res;
+                this.authService.storeUserDetails(userDetails);
+                this.resourceService.getResources().then((resources) => {
+                    console.log('Resources reloaded after login:', resources);
+                    this.router.navigate(['/dashboard']);
+                });
+            } else {
+                Swal.fire({ icon: 'error', title: 'Login Failed', text: res?.message || 'Login failed', confirmButtonText: 'OK' });
+            }
+        },
+        (error: any) => {
+            Swal.fire({ icon: 'error', title: 'Error', text: error?.error?.message || error?.message || 'Something went wrong', confirmButtonText: 'OK' });
+        },
     );
   }
 }

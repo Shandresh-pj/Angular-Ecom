@@ -132,9 +132,9 @@ export class UsersComponent extends Utils implements OnInit {
   private buildForm(): void {
     this.UsersForm = this.formBuilder.group({
       Id:           [''],
-      FirstName:    ['', Validators.required],
+      FirstName:    ['', [Validators.required, Validators.minLength(2)]],
       LastName:     [''],
-      MobileNumber: ['', Validators.required],
+      MobileNumber: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10)]],
       Email:        ['', [Validators.required, Validators.email]],
       Password:     [''],
       Address:      [''],
@@ -150,9 +150,11 @@ export class UsersComponent extends Utils implements OnInit {
   private applyFieldValidators(): void {
     const cfg = this.typeConfig;
     this.setValidator('ReferralCode', cfg.showReferralCode ? Validators.required : null);
-    this.setValidator('AadharNumber', cfg.showAadhar      ? Validators.required : null);
-    this.setValidator('DOB',          cfg.showDOB         ? Validators.required : null);
-    this.setValidator('Gender',       cfg.showGender      ? Validators.required : null);
+    this.setValidator('AadharNumber', cfg.showAadhar
+      ? [Validators.required, Validators.minLength(12), Validators.maxLength(12)]
+      : null);
+    this.setValidator('DOB',    cfg.showDOB    ? Validators.required : null);
+    this.setValidator('Gender', cfg.showGender ? Validators.required : null);
   }
 
   private setValidator(field: string, validator: any): void {
@@ -220,7 +222,7 @@ export class UsersComponent extends Utils implements OnInit {
     if (mode === 'add') {
       this.UsersForm.enable();
       this.UsersForm.reset();
-      passwordCtrl?.setValidators(Validators.required);
+      passwordCtrl?.setValidators([Validators.required, Validators.minLength(8)]);
       passwordCtrl?.updateValueAndValidity();
       return;
     }

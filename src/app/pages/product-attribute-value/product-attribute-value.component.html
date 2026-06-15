@@ -4,7 +4,7 @@
         @if(!showProAttributeValueForm){
         <app-mat-table #mattablechild URL="ProductAttributeValue/All" [action]="action" [filterOptions]="['All']"
             [columns]="columns" (add)="Toggleclass($event,'add')" (view)="Toggleclass($event,'view')"
-            (edit)="Toggleclass($event,'edit')" [addedName]="'Product Attribute Value'"></app-mat-table>
+            (edit)="Toggleclass($event,'edit')" (delete)="onDelete($event)" [addedName]="'Product Attribute Value'"></app-mat-table>
         }@else{
         <form [formGroup]="proattributevalueForm">
             <div class="row">

@@ -460,7 +460,7 @@ onFilterChange(): void {
     XLSX.writeFile(wb, 'table-data.xlsx');
   }
  getMediaUrl(path: string): string {
-  if (!path) {
+  if (!path || path === 'null' || path === 'undefined') {
     return 'Logo/noimage1.png';
   }
 
@@ -469,8 +469,11 @@ onFilterChange(): void {
     return path;
   }
 
-  // Relative path from API
-  return `${environment.domain}/${path}`;
+  // Static files are served at server root, not under /api
+  const serverRoot = environment.domain.replace('/api', '');
+  const fullUrl = `${serverRoot}${path}`;
+  console.log('getMediaUrl:', path, '→', fullUrl);
+  return fullUrl;
 }
 truncateText(text: string, limit: number = 16): string {
       if (!text) {

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../core/service/auth.service';
@@ -8,7 +8,7 @@ import { UserService } from '../../core/service/user.service';
 import { CustomizerSettingsService } from '../../customizer-settings/customizer-settings.service';
 import { Utils } from '../../utils';
 import { MatCard } from '@angular/material/card';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatTableComponent } from '../../shared/mat-table/mat-table.component';
@@ -17,7 +17,7 @@ import { QuillComponent } from '../../shared/quill/quill.component';
 @Component({
   selector: 'app-feedback',
   standalone: true,
-  imports: [MatTableComponent,MatCard,MatIcon,MatFormField,MatInput,
+  imports: [MatTableComponent,MatCard,MatIcon,MatFormField,MatInput,MatError,
         ReactiveFormsModule,MatLabel,QuillComponent],
   templateUrl: './feedback.component.html',
   styleUrl: './feedback.component.scss'

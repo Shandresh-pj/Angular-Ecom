@@ -86,8 +86,38 @@
     [previewUrls]="BannerMultiUrls"
     [Mode]="formMode"
     (ImageEmitValue)="onMultipleImagesReceived($event)"
-    (deleteImage)="onMultipleImageDelete()">
+    (deleteImage)="onGalleryImageDelete($event)">
 </app-fileupload>
+</div>
+
+<div class="col-md-12 mt-3">
+    <label>Product Video <span style="color:#888;font-size:12px;">(Max 20MB · mp4, webm, ogg)</span></label>
+    <div class="row">
+        <div class="col-md-6">
+            <input
+                type="file"
+                class="form-control mt-2"
+                accept="video/mp4,video/webm,video/ogg"
+                [disabled]="formMode === 'view'"
+                (change)="onVideoSelected($event)"
+            />
+            <p style="font-size:12px;margin-top:6px;color:#888;">
+                <b>Note:-</b> Only <b>mp4, webm, ogg</b> supported. Max size <b>20MB</b>.
+            </p>
+        </div>
+        <div class="col-md-5 d-flex align-items-center">
+            @if (videoPreviewUrl) {
+                <div class="position-relative">
+                    @if (formMode !== 'view') {
+                        <button type="button" class="btn btn-danger btn-sm mb-1" (click)="onVideoDelete()">
+                            <mat-icon style="font-size:16px;line-height:1;">delete</mat-icon> Remove
+                        </button>
+                    }
+                    <video [src]="videoPreviewUrl" controls width="240" style="display:block;border-radius:8px;"></video>
+                </div>
+            }
+        </div>
+    </div>
 </div>
                                 <div class="col-md-12 mt-3">
                                     <div class="buttonsset">

@@ -1,11 +1,10 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { Utils } from '../../utils';
 import { MatTableComponent } from '../../shared/mat-table/mat-table.component';
 import { MatCard } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-    FormArray,
     FormBuilder,
     FormGroup,
     ReactiveFormsModule,
@@ -20,9 +19,9 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { StatusService } from '../../core/service/status.service';
 import { MatSelectModule } from '@angular/material/select';
-import { ConfiglangService } from '../../core/service/configlang.service';
 import { MatTabsModule } from '@angular/material/tabs';
 import { environment } from '../../../environments/environment';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-category',
@@ -47,28 +46,25 @@ export class CategoryComponent extends Utils implements OnInit {
 
     CompanyId: any;
     isToggled: any;
-    public action = { add: true, edit: true, view: true };
+    @ViewChild('mattablechild') mattablechild!: MatTableComponent;
+    public action = { add: true, edit: true, view: true, delete: true };
     columns: any;
     showCategoryForm = false;
     categoryForm!: FormGroup;
     formMode: any;
     statuses: any;
-    public languages: any;
-    languageIds: any = [];
-    selectedTab: any = 0;
-    catLanguage: any = {};
     category: any[] = [];
-    public apiRoute = 'Category';
+
+    // Existing backend API: /categories
+    public apiRoute = 'categories';
     public uiPagePath: string = 'category';
+    pageLabel: string = 'Category';
+
     fileName: any;
     ImageFile: any;
     urls: any[] = [];
     getdetailcategory: any;
     deletedImage = false;
-
-    // ✅ FIX: Plain property instead of getter — set ONCE, never recreated
-    pageLabel: string = 'Category';
-    tableCustomParams: any = {};
 
     constructor(
         private formBuilder: FormBuilder,
@@ -77,7 +73,6 @@ export class CategoryComponent extends Utils implements OnInit {
         private activatedRoute: ActivatedRoute,
         private authService: AuthService,
         private cdr: ChangeDetectorRef,
-        private config: ConfiglangService,
         private route: ActivatedRoute,
         private router: Router,
         private statusService: StatusService,
@@ -87,10 +82,10 @@ export class CategoryComponent extends Utils implements OnInit {
         super();
         this.categoryForm = this.formBuilder.group({
             Id: [''],
-            ParentCategoryId: [0, Validators.required],
+            name: ['', Validators.required],
+            description: [''],
+            parent_id: [0, Validators.required],
             StatusId: ['', Validators.required],
-            Type: ['', Validators.required],
-            CategoryTranslations: this.formBuilder.array([]),
         });
 
         this.themeService.isToggled$.subscribe((isToggled) => {
@@ -110,97 +105,48 @@ export class CategoryComponent extends Utils implements OnInit {
             {
                 columnDef: 'ID',
                 header: 'ID',
-                cell: (element: any) => `${element?.Id}`,
+                cell: (element: any) => `${element?.id}`,
             },
             {
                 columnDef: 'Name',
                 header: 'Name',
-                cell: (element: any) =>
-                    `${element.CategoryTranslations[0]?.Name
-                        ? element.CategoryTranslations[0]?.Name
-                        : element.CategoryTranslations[1]?.Name}`,
+                cell: (element: any) => `${element?.name ?? ''}`,
             },
             {
-                columnDef: 'Decription',
+                columnDef: 'Description',
                 header: 'Description',
-                cell: (element: any) =>
-                    `${element.CategoryTranslations[0]?.Description
-                        ? element.CategoryTranslations[0]?.Description
-                        : element.CategoryTranslations[1]?.Description}`,
+                cell: (element: any) => `${element?.description ?? ''}`,
+            },
+            {
+                columnDef: 'Status',
+                header: 'Status',
+                cell: (element: any) => {
+                    const statusObj = this.statuses?.find((s: any) => s.Id === element?.StatusId);
+                    return statusObj ? statusObj.StatusCode : '';
+                },
             },
         ];
     }
 
     ngOnInit(): void {
-
-        // ✅ PAGE LABEL
-        this.pageLabel = this.categoryType
-            ? `${this.categoryType} Category`
-            : 'Category';
-    
-        // ✅ TABLE FILTER
-        if (this.categoryType && this.categoryType.trim() !== '') {
-    
-            this.tableCustomParams = {
-                Type: this.categoryType
-            };
-    
-            // ✅ DYNAMIC REDIRECT URL
-            this.uiPagePath =
-                `${this.categoryType.toLowerCase()}-category`;
-    
-        } else {
-    
-            this.tableCustomParams = {};
-    
-            // ✅ NORMAL CATEGORY PAGE
-            this.uiPagePath = 'category';
-    
-        }
-    
-        this.languages = this.config?.lang;
-    
         this.getStatues();
-    
-        for (let lang of this.languages) {
-    
-            this.CategoryTranslations().push(this.createItem());
-    
-            this.languageIds.push({
-                LanguageId: lang.Id
-            });
-    
-        }
-    
-        // ✅ DEFAULT TYPE
-        this.categoryForm.patchValue({
-            Type: this.categoryType || '',
-            CategoryTranslations: this.languageIds,
-        });
-    
-    }
-
-    CategoryTranslations(): FormArray {
-        return this.categoryForm.get('CategoryTranslations') as FormArray;
-    }
-
-    createItem(): FormGroup {
-        return this.formBuilder.group({
-            LanguageId: [''],
-            Name: ['', Validators.required],
-            Description: [''],
-        });
     }
 
     getStatues() {
-        this.statuses = this.statusService.getStatus('COMMON');
+        this.statusService.getStatues().subscribe({
+            next: (res: any) => {
+                this.statuses = this.statusService.getStatus('COMMON');
+            },
+            error: () => {
+                this.statuses = [];
+            },
+        });
     }
 
     getCategory() {
-        const params = this.categoryType ? { Type: this.categoryType } : {};
-        this.commonService.getApi(`Category/All`, params).subscribe({
+        this.commonService.getApi(`categories`).subscribe({
             next: (res: any) => {
-                this.category = res?.data?.data;
+                this.category = Array.isArray(res?.data) ? res.data : [];
             },
             error: () => {
                 this.category = [];
@@ -233,34 +179,20 @@ export class CategoryComponent extends Utils implements OnInit {
         this.urls = [];
         if (mode === 'edit' || mode === 'view') {
             this.commonService
-                .getApi(`Category/Detail/${value?.Id}`)
+                .getApi(`categories/${value?.id}`)
                 .subscribe((res: any) => {
                     this.getdetailcategory = res?.data;
-                    if (this.getdetailcategory?.UploadImage) {
+                    if (this.getdetailcategory?.image) {
                         this.urls.push(
-                            `${environment.domain}/${this.getdetailcategory.UploadImage}`
+                            `${environment.domain.replace('/api', '')}${this.getdetailcategory.image}`
                         );
                     }
-                    this.categoryForm.patchValue({ ...this.getdetailcategory });
-                    this.CategoryTranslations().clear();
-                    for (
-                        let i = 0;
-                        i < this.getdetailcategory?.CategoryTranslations.length;
-                        i++
-                    ) {
-                        this.CategoryTranslations().push(
-                            this.formBuilder.group({
-                                LanguageId:
-                                    this.getdetailcategory?.CategoryTranslations[i].LanguagesId,
-                                Name: this.getdetailcategory?.CategoryTranslations[i].Name,
-                                Description:
-                                    this.getdetailcategory?.CategoryTranslations[i].Description,
-                            })
-                        );
-                    }
-                    this.catLanguage = {};
-                    this.getdetailcategory?.CategoryTranslations.map((cat: any) => {
-                        this.catLanguage[cat?.LanguagesId] = cat;
+                    this.categoryForm.patchValue({
+                        Id: this.getdetailcategory?.id,
+                        name: this.getdetailcategory?.name,
+                        description: this.getdetailcategory?.description,
+                        parent_id: this.getdetailcategory?.parent_id ?? 0,
+                        StatusId: this.getdetailcategory?.StatusId,
                     });
                     if (mode === 'view') {
                         this.categoryForm.disable();
@@ -276,44 +208,43 @@ export class CategoryComponent extends Utils implements OnInit {
     }
 
     SubmitCategoryForm(form: FormGroup) {
-        this.selectedTab = this.tabValidate(form, 'CategoryTranslations', 'Name');
-        if (form.valid) {
-            const formData = new FormData();
-
-            // if (this.categoryType) {
-                // formData.append('Type', this.categoryType);
-            // }
-            if (this.ImageFile) {
-                formData.append('UploadImage', this.ImageFile);
-            }
-            if (this.deletedImage) {
-                formData.append('UploadImage', '');
-            }
-            for (var key in form.value) {
-                if (Array.isArray(form.value[key])) {
-                    formData.append(key, JSON.stringify(form.value[key]));
-                } else {
-                    formData.append(key, form.value[key]);
-                }
-            }
-
-            this.formDataSubmit(
-                this.categoryForm.value.Id,
-                formData,
-                this.categoryForm,
-                this.apiRoute,
-                {
-                    redirect: '/' + this.uiPagePath,
-                    formInitialValues: this.formInitialValues,
-                    commonService: this.commonService,
-                    router: this.router,
-                }
-            ).then(() => {
-                this.closeCategoryForm();
-            });
-        } else {
+        if (!form.valid) {
             this.validateAllFormFields(form);
+            return;
         }
+
+        const formData = new FormData();
+        formData.append('name', form.value.name ?? '');
+        formData.append('description', form.value.description ?? '');
+        formData.append('parent_id', String(form.value.parent_id ?? 0));
+        formData.append('StatusId', String(form.value.StatusId ?? ''));
+        if (this.ImageFile) {
+            formData.append('image', this.ImageFile);
+        }
+
+        const Id = form.value.Id;
+
+        const request$ =
+            !Id || Id === 0
+                ? this.commonService.postFormData('categories/create', formData)
+                : this.commonService.putFormData(`categories/${Id}`, formData);
+
+        request$.subscribe({
+            next: (res: any) => {
+                Swal.fire({
+                    icon: 'success',
+                    title: Id ? 'Updated Successfully' : 'Added Successfully',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    width: 400,
+                }).then(() => {
+                    this.closeCategoryForm();
+                });
+            },
+            error: (error: any) => {
+                this.errorAlert(error);
+            },
+        });
     }
 
     closeCategoryForm() {
@@ -325,23 +256,53 @@ export class CategoryComponent extends Utils implements OnInit {
     }
 
     resetForm() {
-        this.CategoryTranslations().clear();
-        this.languageIds = [];
-        for (let lang of this.languages) {
-            this.CategoryTranslations().push(this.createItem());
-            this.languageIds.push({ LanguageId: lang.Id });
-        }
         this.categoryForm.patchValue({
             Id: '',
-            ParentCategoryId: 0,
+            name: '',
+            description: '',
+            parent_id: 0,
             StatusId: '',
-            Type: this.categoryType || '',
-            CategoryTranslations: this.languageIds,
         });
         this.urls = [];
         this.ImageFile = null;
         this.fileName = null;
-        this.selectedTab = 0;
         this.deletedImage = false;
+    }
+
+    onDelete(element: any): void {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You want to delete this category?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#602F80',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.commonService.deleteApi(`categories/${element?.Id || element?.id}`).subscribe({
+                    next: () => {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Category deleted successfully.',
+                            icon: 'success',
+                            confirmButtonColor: '#602F80'
+                        });
+                        this.mattablechild.getData();
+                    },
+                    error: (err) => {
+                        const errorMessage = err?.error?.message || 'Delete failed. Please try again.';
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorMessage,
+                            icon: 'error',
+                            confirmButtonColor: '#602F80'
+                        });
+                        console.error('Delete failed:', err);
+                    }
+                });
+            }
+        });
     }
 }

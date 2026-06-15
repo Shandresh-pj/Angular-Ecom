@@ -17,6 +17,9 @@
                     matInput
                     formControlName="Name"
                      />
+                @if (BankForm.get('Name')?.hasError('required') && BankForm.get('Name')?.touched) {
+                    <mat-error>Bank name is required</mat-error>
+                }
             </mat-form-field>
         </div>
     </div>

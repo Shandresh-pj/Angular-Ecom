@@ -19,15 +19,13 @@ import { MatIcon } from '@angular/material/icon';
 export class FileuploadComponent {
 
   @Output() ImageEmitValue = new EventEmitter<File | File[]>();
-  @Output() deleteImage = new EventEmitter<boolean>();
+  @Output() deleteImage = new EventEmitter<string>();
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   @Input() filedname: any = '';
   @Input() Mode: any = '';
   @Input() previewUrls: any[] = [];
-
-  // NEW
   @Input() multiple: boolean = false;
 
   urls: any[] = [];
@@ -42,60 +40,38 @@ export class FileuploadComponent {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['previewUrls']) {
-      this.urls = this.previewUrls || [];
+      this.urls = [...(this.previewUrls || [])];
     }
   }
 
   detectFiles(event: any): void {
-
     const files: FileList = event.target.files;
+    if (!files || files.length === 0) return;
 
-    if (!files || files.length === 0) {
-      return;
-    }
-
-    this.urls = [];
     this.deletedImage = false;
 
-    const selectedFiles: File[] = [];
-
-    for (let i = 0; i < files.length; i++) {
-
-      const file = files[i];
-
-      selectedFiles.push(file);
-
+    if (!this.multiple) {
+      // Single image: clear existing and show new preview via FileReader
+      this.urls = [];
+      const file = files[0];
       const reader = new FileReader();
-
-      reader.onload = (e: any) => {
-        this.urls.push(e.target.result);
-      };
-
+      reader.onload = (e: any) => { this.urls = [e.target.result]; };
       reader.readAsDataURL(file);
-
-    }
-
-    if (this.multiple) {
-      this.ImageEmitValue.emit(selectedFiles);
+      this.ImageEmitValue.emit(file);
     } else {
-      this.ImageEmitValue.emit(selectedFiles[0]);
+      // Multiple images: parent manages URLs via previewUrls, just emit new files
+      const selectedFiles: File[] = Array.from(files) as File[];
+      this.ImageEmitValue.emit(selectedFiles);
     }
   }
 
   deleteimage(url: string): void {
-
-    this.urls = this.urls.filter(
-      (u) => u !== url
-    );
-
+    this.urls = this.urls.filter(u => u !== url);
     this.deletedImage = true;
-
-    this.deleteImage.emit(true);
-
+    this.deleteImage.emit(url);
     if (this.fileInput) {
       this.fileInput.nativeElement.value = '';
     }
-
   }
 
 }

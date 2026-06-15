@@ -52,15 +52,21 @@ export class EComProductsComponent extends Utils implements OnInit{
     companycode :any;
     userdetails: any;
     deletedImage = false;
+    baseUrl = environment.domain.replace('/api', '');
     page = 1;
 limit = 10;
 totalRecords = 0;
 
 BannerImageFile: File | null = null;
 BannerImagesFiles: File[] = [];
+VideoFile: File | null = null;
+videoPreviewUrl: string | null = null;
 
 Bannerurls: string[] = [];
 BannerMultiUrls: string[] = [];
+
+// Gallery blob tracking: blobUrl → File (for newly selected images)
+galleryBlobMap = new Map<string, File>();
     
 
 
@@ -82,8 +88,9 @@ constructor(
             price: ['', Validators.required],
             description: ['',  Validators.required],
             barcode: [''],
-            image: ['', Validators.required],
-            images: [[], Validators.required],
+            image: [''],
+            images: [[]],
+            video: [null],
             register_id : ['']
         });
         this.themeService.isToggled$.subscribe((isToggled) => {
@@ -96,7 +103,7 @@ constructor(
             {columnDef: 'Price',header: 'Price',cell: (element: any) => `${element?.price}`,},
             {columnDef: 'Barcode',header: 'Barcode',cell: (element: any) => `${element?.barcode}`,},
             // {columnDef: 'Description',header: 'Description',cell: (element: any) => `${element?.description}`,},
-            {columnDef: 'UploadImage',header: 'Image',cell: (element: any) => `${element?.image}`},
+            {columnDef: 'UploadImage',header: 'Image',cell: (element: any) => element?.image || ''},
             // {columnDef: 'Status',header: 'Status',cell: (element: any) => `${element?.status}`,},
 
         ];
@@ -126,11 +133,29 @@ Toggleclass(value: any, mode: any) {
 
         this.BannerEdit = value;
 
+        console.log('=== IMAGE DEBUG ===');
+        console.log('Raw image from API:', this.BannerEdit?.image);
+        console.log('Raw images from API:', this.BannerEdit?.images);
+        console.log('baseUrl:', this.baseUrl);
+
         this.Bannerurls = this.BannerEdit?.image
-            ? [this.BannerEdit.image]
+            ? [`${this.baseUrl}${this.BannerEdit.image}`]
             : [];
 
-        this.BannerMultiUrls = this.BannerEdit?.images ? this.BannerEdit.images : [];
+        this.BannerMultiUrls = this.BannerEdit?.images
+            ? this.BannerEdit.images.map((img: string) => `${this.baseUrl}${img}`)
+            : [];
+
+        console.log('Bannerurls (main image):', this.Bannerurls);
+        console.log('BannerMultiUrls (gallery):', this.BannerMultiUrls);
+        console.log('===================');
+
+        this.videoPreviewUrl = this.BannerEdit?.video
+            ? `${this.baseUrl}${this.BannerEdit.video}`
+            : null;
+        console.log('Raw video from API:', this.BannerEdit?.video);
+        console.log('videoPreviewUrl:', this.videoPreviewUrl);
+
         this.UsersForm.patchValue({
             id: this.BannerEdit?.id || '--',
             name: this.BannerEdit?.name || '--',
@@ -139,6 +164,7 @@ Toggleclass(value: any, mode: any) {
             barcode: this.BannerEdit?.barcode || '--',
             image: this.BannerEdit?.image || '--',
             images: this.BannerEdit?.images || [],
+            video: this.BannerEdit?.video || null,
             register_id: this.userdetails?.id || '--'
         });
 
@@ -152,6 +178,12 @@ Toggleclass(value: any, mode: any) {
     if (mode === 'add') {
         this.UsersForm.reset();
         this.Bannerurls = [];
+        this.BannerMultiUrls = [];
+        this.VideoFile = null;
+        this.videoPreviewUrl = null;
+        this.galleryBlobMap.forEach((_, url) => URL.revokeObjectURL(url));
+        this.galleryBlobMap.clear();
+        this.BannerImagesFiles = [];
     }
 }
 
@@ -188,6 +220,12 @@ GetProfile() {
         this.formMode = '';
         this.selectedRow = null;
         this.Bannerurls = [];
+        this.BannerMultiUrls = [];
+        this.VideoFile = null;
+        this.videoPreviewUrl = null;
+        this.galleryBlobMap.forEach((_, url) => URL.revokeObjectURL(url));
+        this.galleryBlobMap.clear();
+        this.BannerImagesFiles = [];
         this.UsersForm.enable();
         this.UsersForm.reset();
     }
@@ -227,35 +265,55 @@ onSingleImageDelete(): void {
 
 }
 
-onMultipleImagesReceived(event: any): void {
+onVideoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
 
-    const files = Array.isArray(event)
-        ? event
-        : [event];
+    const maxSize = 20 * 1024 * 1024;
+    if (file.size > maxSize) {
+        Swal.fire({ title: 'Error', text: 'Video must be under 20MB', icon: 'error' });
+        input.value = '';
+        return;
+    }
 
-    this.BannerImagesFiles = files;
-
-    this.UsersForm.patchValue({
-        images: files
-    });
-
-    this.UsersForm.get('images')?.updateValueAndValidity();
-
-    console.log('Multiple Images Selected:', files);
-
+    this.VideoFile = file;
+    this.videoPreviewUrl = URL.createObjectURL(file);
+    this.UsersForm.patchValue({ video: file });
 }
 
-onMultipleImageDelete(): void {
+onVideoDelete(): void {
+    this.VideoFile = null;
+    this.videoPreviewUrl = null;
+    this.UsersForm.patchValue({ video: null });
+}
 
-    this.BannerMultiUrls = [];
-    this.BannerImagesFiles = [];
+onMultipleImagesReceived(event: any): void {
+    const newFiles: File[] = Array.isArray(event) ? event : [event];
 
-    this.UsersForm.patchValue({
-        images: []
+    newFiles.forEach(file => {
+        const blobUrl = URL.createObjectURL(file);
+        this.galleryBlobMap.set(blobUrl, file);
+        this.BannerMultiUrls = [...this.BannerMultiUrls, blobUrl];
     });
 
+    this.BannerImagesFiles = Array.from(this.galleryBlobMap.values());
+    this.UsersForm.patchValue({ images: this.BannerImagesFiles });
     this.UsersForm.get('images')?.updateValueAndValidity();
+}
 
+onGalleryImageDelete(url: string): void {
+    // Remove from display list
+    this.BannerMultiUrls = this.BannerMultiUrls.filter(u => u !== url);
+
+    // If it was a newly selected file, revoke and remove from map
+    if (this.galleryBlobMap.has(url)) {
+        URL.revokeObjectURL(url);
+        this.galleryBlobMap.delete(url);
+        this.BannerImagesFiles = Array.from(this.galleryBlobMap.values());
+        this.UsersForm.patchValue({ images: this.BannerImagesFiles });
+        this.UsersForm.get('images')?.updateValueAndValidity();
+    }
 }
 
 SubmitUsersForm(form: FormGroup): void {
@@ -301,12 +359,12 @@ SubmitUsersForm(form: FormGroup): void {
 
     // Single Image
     if (this.BannerImageFile) {
+        formData.append('image', this.BannerImageFile);
+    }
 
-        formData.append(
-            'image',
-            this.BannerImageFile
-        );
-
+    // Video
+    if (this.VideoFile) {
+        formData.append('video', this.VideoFile);
     }
 
     // Multiple Images
@@ -346,6 +404,8 @@ SubmitUsersForm(form: FormGroup): void {
 
                     this.BannerImageFile = null;
                     this.BannerImagesFiles = [];
+                    this.VideoFile = null;
+                    this.videoPreviewUrl = null;
 
                     this.Bannerurls = [];
                     this.BannerMultiUrls = [];
@@ -393,6 +453,8 @@ SubmitUsersForm(form: FormGroup): void {
 
                     this.BannerImageFile = null;
                     this.BannerImagesFiles = [];
+                    this.VideoFile = null;
+                    this.videoPreviewUrl = null;
 
                     this.Bannerurls = [];
                     this.BannerMultiUrls = [];
