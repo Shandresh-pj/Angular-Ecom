@@ -1,25 +1,42 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Utils } from '../../utils';
 import { MatTableComponent } from '../../shared/mat-table/mat-table.component';
 import { MatCard } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../../core/service/auth.service';
 import { CommonService } from '../../core/service/common.service';
-import { EncryptionService } from '../../core/service/encryption.service';
-import { UserService } from '../../core/service/user.service';
 import { CustomizerSettingsService } from '../../customizer-settings/customizer-settings.service';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { QuillComponent } from '../../shared/quill/quill.component';
-import { StatusService } from '../../core/service/status.service';
 import { MatSelectModule } from '@angular/material/select';
-import { ConfiglangService } from '../../core/service/configlang.service';
 import { MatTabsModule } from '@angular/material/tabs';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../core/service/auth.service';
 import Swal from 'sweetalert2';
 
+/**
+ * Wired to the actual backend contract (New-E-Commerce-Backend):
+ *   GET    /api/products?page=&limit=&status=&product_type=&category=&search=
+ *   GET    /api/products/:id
+ *   POST   /api/products/add        (multipart/form-data)
+ *   PUT    /api/products/:id        (multipart/form-data)
+ *   DELETE /api/products/:id
+ * Product fields are lowercase (name, price, stock, category, product_type,
+ * stock_in_hand, status, barcode) — there is no multi-language translation
+ * table on this backend, unlike the reference contract this component
+ * previously targeted. `stock` is required by the backend but hidden here —
+ * it's kept in sync with `stock_in_hand` since the UI only exposes one
+ * stock field.
+ *
+ * Variants follow the ProductVariant contract exactly: one row per
+ * attribute/value with its own Barcode/Price/Stock
+ *   { Id, CompanyId, ProductId, Barcode, Price, Stock, ProductAttributeId, ProductAttributeValueId }
+ * On update, the backend replaces the variant set: rows with a matching Id
+ * are updated, rows without Id are inserted, and existing rows missing from
+ * the submitted array are deleted.
+ */
 @Component({
   selector: 'app-products',
   standalone: true,
@@ -32,136 +49,78 @@ import Swal from 'sweetalert2';
 })
 export class ProductsComponent extends Utils implements OnInit {
 
-  CompanyId: any;
   isToggled: any;
   @ViewChild('mattablechild') mattablechild!: MatTableComponent;
   public action = { add: true, edit: true, view: true, delete: true };
   columns: any;
-  productLanguage: any = {};
   showProductsForm = false;
   productsForm!: FormGroup;
   formMode: any;
-  producturls: any[] = [];
-  productsfileName: any;
-  productsImageFile: any;
+  // Already-persisted gallery URLs (relative paths, e.g. /uploads/images/x.webp)
+  existingImageUrls: string[] = [];
+  // Newly picked files for this session, with data-URL previews kept in lockstep by index
   productsImageFiles: File[] = [];
+  newImagePreviews: string[] = [];
   videoFile: File | null = null;
   videoFileName: string = '';
   videoUrl: string = '';
-  productTypes: any;
-  productTypeKeys: any;
-  statuses: any;
-  category: any;
+  category: any;  
   selectedTab: any = 0;
-  public apiRoute = 'Product';
   public uiPagePath = 'products';
-  public languages: any;
-  languageIds: any = [];
   getdetailproducts: any;
   productattribute: any;
 
-  // FIX: per-row attribute values map instead of a single shared array
+  // per-row attribute values map (row index -> ProductAttributeValue[])
   getproductattributevalues: { [index: number]: any[] } = {};
-
-  deletedImage = false;
-  getresellers: any;
 
   constructor(
     private formBuilder: FormBuilder,
     public themeService: CustomizerSettingsService,
     private commonService: CommonService,
-    private activatedRoute: ActivatedRoute,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef,
-    private route: ActivatedRoute,
-    public statusService: StatusService,
-    private config: ConfiglangService,
     private router: Router,
-    public userService: UserService,
-    private encryptionService: EncryptionService
   ) {
     super();
     this.productsForm = this.formBuilder.group({
       Id: [''],
-      Code: [''],
-      ResellerId: [''],
-      CategoryIds: ['', Validators.required],
-      ProductType: ['', Validators.required],
-      IsAllowNegativeStock: [false],
-      StockInHand: ['', Validators.required],
+      name: ['', Validators.required],
+      description: [''],
+      category: [''],
       price: ['', Validators.required],
+      // `stock` is required by the backend but no longer shown in the UI —
+      // it's kept in sync with stock_in_hand below.
+      stock: [0],
+      stock_in_hand: ['', Validators.required],
       barcode: [''],
-      ProductTranslations: this.formBuilder.array([]),
-      ProductVariants: this.formBuilder.array([]),
+      product_type: ['simple', Validators.required],
+      status: ['active', Validators.required],
+      registration_id: [this.authService.fetchUserDetails()?.user?.id || ''],
+      variants: this.formBuilder.array([]),
+    });
+
+    this.productsForm.get('stock_in_hand')?.valueChanges.subscribe((value) => {
+      this.productsForm.get('stock')?.setValue(value, { emitEvent: false });
     });
 
     this.themeService.isToggled$.subscribe((isToggled) => {
       this.isToggled = isToggled;
     });
 
-    this.activatedRoute.queryParams.subscribe((params) => {
-      const encryptedData = params['data'];
-      this.CompanyId = params['company_id'] || 0;
-      if (encryptedData) {
-        const decryptedObj = this.encryptionService.decrypt(encryptedData);
-        console.log('Decrypted Params:', decryptedObj);
-        this.CompanyId = decryptedObj.company_id || 0;
-      }
-    });
-
     this.columns = [
       {
         columnDef: 'ID',
         header: 'ID',
-        cell: (element: any) => `${element?.Id ?? element?.id ?? ''}`,
+        cell: (element: any) => `${element?.id ?? ''}`,
       },
       {
         columnDef: 'Name',
         header: 'Name',
-        cell: (element: any) => {
-          if (element.ProductTranslations && element.ProductTranslations.length > 0) {
-            return element.ProductTranslations[0]?.Name || element.ProductTranslations[1]?.Name || '';
-          }
-          return element.name || '';
-        }
+        cell: (element: any) => element?.name || '',
       },
       {
         columnDef: 'Category',
         header: 'Category',
-        cell: (element: any) => {
-          if (!element?.category) return '';
-          let ids: any[] = [];
-          try {
-            const parsed = JSON.parse(element.category);
-            ids = Array.isArray(parsed) ? parsed : [parsed];
-          } catch {
-            if (typeof element.category === 'string') {
-              ids = element.category.split(',').map((s: string) => s.trim());
-            } else if (typeof element.category === 'number') {
-              ids = [element.category];
-            } else {
-              ids = [element.category];
-            }
-          }
-          return ids
-            .map(id => {
-              const catObj = this.category?.find((c: any) => String(c.id || c.Id) === String(id));
-              return catObj ? catObj.Name || catObj.name : '';
-            })
-            .filter(Boolean)
-            .join(', ') || element.category;
-        }
-      },
-      {
-        columnDef: 'Decription',
-        header: 'Description',
-        cell: (element: any) => {
-          if (element.ProductTranslations && element.ProductTranslations.length > 0) {
-            return (element.ProductTranslations[0]?.Description || element.ProductTranslations[1]?.Description || '')
-              .replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ');
-          }
-          return (element.description || '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ');
-        }
+        cell: (element: any) => element?.category || '',
       },
       {
         columnDef: 'Price',
@@ -169,82 +128,57 @@ export class ProductsComponent extends Utils implements OnInit {
         cell: (element: any) => element?.price !== undefined ? `${element.price}` : '',
       },
       {
-        columnDef: 'DiscountPrice',
-        header: 'Discount Price',
-        cell: (element: any) => element?.discount_price !== undefined ? `${element.discount_price}` : '',
+        columnDef: 'StockInHand',
+        header: 'Stock In Hand',
+        cell: (element: any) => element?.stock_in_hand !== undefined ? `${element.stock_in_hand}` : '',
       },
       {
-        columnDef: 'Coupon',
-        header: 'Coupon',
-        cell: (element: any) => element?.coupon ? `${element.coupon.code} (${element.coupon.type === 'flat' ? 'Flat' : 'Percent'} ${element.coupon.value})` : '-',
+        columnDef: 'ProductType',
+        header: 'Product Type',
+        cell: (element: any) => element?.product_type === 'simple' ? 'Single' : element?.product_type === 'variant' ? 'Variant' : '',
       },
       {
-        columnDef: 'StatusToggle',
+        columnDef: 'Status',
         header: 'Status',
-        cell: (element: any) => element?.Status || element?.status || 'ACTIVE',
-        statusOn:  'APPROVED',         // checked  = Approved
-        statusOff: 'ACTIVE',           // unchecked = Active
-        toggleUrl: 'Product/Update',   // calls POST /Product/Update/:Id
+        cell: (element: any) => element?.status || '',
       },
       {
         columnDef: 'CreatedDate',
         header: 'Created Date',
-        cell: (element: any) =>
-          `${this.datePipe.transform(element.CreatedAt || element.created_at, 'MMM dd, yyyy') || ''}`,
+        cell: (element: any) => this.formatCreatedDate(element?.created_at),
       },
     ];
   }
 
   ngOnInit(): void {
-    this.languages = this.config?.lang;
-    console.log('checklanguaes', this.languages);
     this.getCategory();
-    this.getReseller();
-    for (let lang of this.languages) {
-      this.ProductTranslations().push(this.createItem());
-      this.languageIds.push({ LanguageId: lang.Id });
-    }
-    this.productsForm.patchValue({
-      ProductTranslations: this.languageIds
-    });
   }
 
-  ProductTranslations(): FormArray {
-    return this.productsForm.get('ProductTranslations') as FormArray;
+  // Backend sends created_at/updated_at as "DD:MM:YYYY HH:mm:ss", which the
+  // Date constructor / DatePipe can't parse directly — parse it manually.
+  formatCreatedDate(value: string): string {
+    if (!value) return '';
+    const match = /^(\d{2}):(\d{2}):(\d{4})\s+(\d{2}):(\d{2}):(\d{2})$/.exec(value);
+    if (!match) return value;
+    const [, day, month, year, hours, minutes, seconds] = match;
+    const date = new Date(
+      Number(year), Number(month) - 1, Number(day),
+      Number(hours), Number(minutes), Number(seconds)
+    );
+    return this.datePipe.transform(date, 'MMM dd, yyyy') || '';
   }
 
   ProductVariants(): FormArray {
-    return this.productsForm.get('ProductVariants') as FormArray;
-  }
-
-  createItem(): FormGroup {
-    return this.formBuilder.group({
-      LanguageId: [''],
-      Name: ['', Validators.required],
-      Description: [''],
-    });
+    return this.productsForm.get('variants') as FormArray;
   }
 
   getCategory() {
     this.commonService.getApi('categories').subscribe({
       next: (res: any) => {
         this.category = Array.isArray(res?.data) ? res.data : [];
-        console.log('category', this.category);
       },
       error: () => {
         this.category = [];
-      }
-    });
-  }
-
-  getReseller() {
-    this.commonService.getApi('User/All', { UserType: 'Reseller' }).subscribe({
-      next: (res: any) => {
-        this.getresellers = res?.data?.data;
-      },
-      error: (err: any) => {
-        this.getresellers = [];
-        console.log('checkReseller', err?.error?.message);
       }
     });
   }
@@ -254,7 +188,7 @@ export class ProductsComponent extends Utils implements OnInit {
       next: (res: any) => {
         this.productattribute = res?.data?.data.map((item: any) => ({
           ...item,
-          Name: item?.ProductAttributeTranslations?.[0]?.Name
+          Name: item?.ProductAttributeTranslations?.[0]?.Name || item?.Name
         }));
       },
       error: (err: any) => {
@@ -264,20 +198,17 @@ export class ProductsComponent extends Utils implements OnInit {
     });
   }
 
-  // FIX: now receives the row index so each row gets its own values list
   Attributeselectvalue(attributeId: any, rowIndex: number) {
-    console.log('checkevent', attributeId, 'row:', rowIndex);
     this.getProductAttributeValueForRow(attributeId, rowIndex);
   }
 
-  // FIX: fetches and stores values per row index
   getProductAttributeValueForRow(id: any, rowIndex: number) {
     const params = id ? { ProductAttributeId: id } : {};
     this.commonService.getApi('ProductAttributeValue/All', params).subscribe({
       next: (res: any) => {
         this.getproductattributevalues[rowIndex] = res?.data?.data.map((item: any) => ({
           ...item,
-          Name: item?.ProductAttributeValueTranslations?.[0]?.Name
+          Name: item?.ProductAttributeValueTranslations?.[0]?.Name || item?.Name
         }));
       },
       error: (err: any) => {
@@ -287,7 +218,6 @@ export class ProductsComponent extends Utils implements OnInit {
     });
   }
 
-  // FIX: initialise empty values list for the new row
   addVarients(): void {
     const newIndex = this.ProductVariants().length;
     this.ProductVariants().push(this.createVarients());
@@ -295,23 +225,13 @@ export class ProductsComponent extends Utils implements OnInit {
   }
 
   RemoveVarients(index: any) {
-    const control = this.ProductVariants().at(index);
-    console.log('checkwork', control);
-    if (control.value.barcode || control.value.ProductVariantCode) {
-      // existing record → mark delete
-      control.patchValue({ Flag: 'D' });
-    } else {
-      // new record → remove
-      this.ProductVariants().removeAt(index);
-      // FIX: rebuild the map so indices stay in sync after removal
-      this.rebuildAttributeValuesMap();
-    }
+    this.ProductVariants().removeAt(index);
+    this.rebuildAttributeValuesMap();
   }
 
-  // FIX: rebuilds the per-row map after a row is removed so indices stay correct
   private rebuildAttributeValuesMap() {
     const newMap: { [index: number]: any[] } = {};
-    this.ProductVariants().controls.forEach((ctrl, idx) => {
+    this.ProductVariants().controls.forEach((_ctrl, idx) => {
       newMap[idx] = this.getproductattributevalues[idx] ?? [];
     });
     this.getproductattributevalues = newMap;
@@ -320,125 +240,83 @@ export class ProductsComponent extends Utils implements OnInit {
   createVarients(data: any = {}): FormGroup {
     return this.formBuilder.group({
       Id: [data.Id || ''],
-      barcode: [data.barcode || data.ProductVariantCode || ''],
-      Price: [data.Price || ''],
-      Stock: [data.Stock || ''],
-      ProductAttributeId: [data.ProductAttributeId || ''],
-      ProductAttributeValueId: [data.ProductAttributeValueId || ''],
-      Flag: [data.Flag || 'N']
+      CompanyId: [data.CompanyId || 0],
+      Barcode: [data.Barcode || ''],
+      Price: [data.Price || '', Validators.required],
+      Stock: [data.Stock || '', Validators.required],
+      ProductAttributeId: [data.ProductAttributeId || '', Validators.required],
+      ProductAttributeValueId: [data.ProductAttributeValueId || '', Validators.required],
     });
+  }
+
+  mediaUrl(path: string): string {
+    return `${environment.domain.replace('/api', '')}${path}`;
   }
 
   Toggleclass(value: any, mode: any) {
     this.formMode = mode;
     this.showProductsForm = true;
-    this.producturls = [];
+    this.existingImageUrls = [];
     this.productsImageFiles = [];
+    this.newImagePreviews = [];
     this.videoFile = null;
     this.videoFileName = '';
     this.videoUrl = '';
-    // FIX: reset per-row map whenever the form opens
     this.getproductattributevalues = {};
 
     if (mode === 'edit' || mode === 'view') {
-      this.commonService.getApi(`products/${value?.Id || value?.id}`).subscribe((res: any) => {
-        this.getdetailproducts = res?.product || res?.data || res;
+      this.commonService.getApi(`products/${value?.id}`).subscribe((res: any) => {
+        const { variants, ...productFields } = res?.data || {};
+        this.getdetailproducts = res?.data;
 
         const domainUrl = environment.domain.replace('/api', '');
-        if (this.getdetailproducts?.image) {
-          this.producturls.push(`${domainUrl}${this.getdetailproducts.image}`);
-        }
-        if (Array.isArray(this.getdetailproducts?.images)) {
-          this.getdetailproducts.images.forEach((img: string) => {
-            const fullUrl = `${domainUrl}${img}`;
-            if (!this.producturls.includes(fullUrl)) {
-              this.producturls.push(fullUrl);
-            }
-          });
+        // `image` (cover) is derived from images[0] on the backend when not
+        // set explicitly, but fall back to including it here too in case
+        // the product was created elsewhere with only a standalone cover.
+        this.existingImageUrls = Array.isArray(productFields?.images)
+          ? [...productFields.images]
+          : [];
+        if (productFields?.image && !this.existingImageUrls.includes(productFields.image)) {
+          this.existingImageUrls.unshift(productFields.image);
         }
 
-        if (this.getdetailproducts?.video) {
-          this.videoUrl = `${domainUrl}${this.getdetailproducts.video}`;
-          this.videoFileName = this.getdetailproducts.video.split('/').pop() || 'video';
+        if (productFields?.video) {
+          this.videoUrl = `${domainUrl}${productFields.video}`;
+          this.videoFileName = productFields.video.split('/').pop() || 'video';
         }
 
-        let categoryIds: any[] = [];
-        if (this.getdetailproducts?.category) {
-          try {
-            const parsed = JSON.parse(this.getdetailproducts.category);
-            categoryIds = Array.isArray(parsed) ? parsed.map(Number) : [Number(parsed)];
-          } catch {
-            if (typeof this.getdetailproducts.category === 'string') {
-              categoryIds = this.getdetailproducts.category.split(',').map((s: string) => Number(s.trim())).filter((n: number) => !isNaN(n));
-            } else {
-              categoryIds = [Number(this.getdetailproducts.category)];
-            }
-          }
-        }
-        console.log('Extracted Category IDs:', categoryIds);
-
-        if (this.getdetailproducts?.ProductType?.toLowerCase() === 'variant') {
+        if (productFields?.product_type === 'variant') {
           this.getProductAttribute();
         }
 
-        this.getReseller();
-
         this.productsForm.patchValue({
-          ...this.getdetailproducts,
-          Id: this.getdetailproducts?.id || this.getdetailproducts?.Id,
-          CategoryIds: categoryIds,
-          StockInHand: this.getdetailproducts?.stock ?? this.getdetailproducts?.StockInHand ?? '',
-          price: this.getdetailproducts?.price ?? '',
-          barcode: this.getdetailproducts?.barcode ?? ''
+          ...productFields,
+          Id: productFields?.id,
         });
 
-        // Rebuild translations
-        this.ProductTranslations().clear();
-        for (let i = 0; i < this.getdetailproducts?.ProductTranslations.length; i++) {
-          this.ProductTranslations().push(this.formBuilder.group({
-            LanguageId: this.getdetailproducts?.ProductTranslations[i].LanguagesId,
-            Name: this.getdetailproducts?.ProductTranslations[i].Name,
-            Description: this.getdetailproducts?.ProductTranslations[i].Description,
-          }));
-        }
-
-        this.productLanguage = {};
-        this.getdetailproducts?.ProductTranslations.map((cat: any) => {
-          this.productLanguage[cat?.LanguagesId] = cat;
-        });
-
-        // FIX: rebuild variants with per-row attribute value pre-loading
         this.ProductVariants().clear();
         this.getproductattributevalues = {};
 
-        if (this.getdetailproducts?.ProductVariant?.length > 0) {
-          this.getdetailproducts.ProductVariant.forEach((v: any, idx: number) => {
-            const attrId = v.ProductVariantAttributes?.[0]?.ProductAttributeId;
-            const attrValId = v.ProductVariantAttributes?.[0]?.ProductAttributeValueId;
-
+        if (Array.isArray(variants) && variants.length > 0) {
+          variants.forEach((v: any, idx: number) => {
             this.ProductVariants().push(
               this.createVarients({
                 Id: v.Id,
-                ProductVariantCode: v.ProductVariantCode,
-                barcode: v.ProductVariantCode || v.barcode || '',
+                CompanyId: v.CompanyId,
+                Barcode: v.Barcode,
                 Price: v.Price,
                 Stock: v.Stock,
-                ProductAttributeId: attrId,
-                ProductAttributeValueId: attrValId,
-                Flag: 'U'
+                ProductAttributeId: v.ProductAttributeId,
+                ProductAttributeValueId: v.ProductAttributeValueId,
               })
             );
-
-            // FIX: pre-fetch attribute values for each existing variant row
-            if (attrId) {
-              this.getProductAttributeValueForRow(attrId, idx);
+            if (v.ProductAttributeId) {
+              this.getProductAttributeValueForRow(v.ProductAttributeId, idx);
             } else {
               this.getproductattributevalues[idx] = [];
             }
           });
-
-        } else if (this.getdetailproducts?.ProductType?.toLowerCase() === 'variant') {
-          // variant type but no existing variants → add one blank row
+        } else if (productFields?.product_type === 'variant') {
           this.ProductVariants().push(this.createVarients());
           this.getproductattributevalues[0] = [];
         }
@@ -450,35 +328,33 @@ export class ProductsComponent extends Utils implements OnInit {
 
     } else if (mode === 'add') {
       this.ProductVariants().clear();
-      this.ProductVariants().push(this.createVarients());
-      this.getproductattributevalues[0] = [];
+      this.getproductattributevalues = {};
     }
   }
 
   ProductdetectFiles(event: any) {
-    const files = Array.from(event.target.files as FileList);
-    this.productsImageFiles = [...this.productsImageFiles, ...files];
-    this.deletedImage = false;
-    if (files) {
-      for (let file of files) {
-        let reader = new FileReader();
-        reader.onload = (e: any) => {
-          this.producturls.push(e.target.result);
-        };
-        reader.readAsDataURL(file);
-      }
-    }
+    const files = Array.from(event.target.files as FileList) as File[];
+    files.forEach((file: File) => {
+      const idx = this.productsImageFiles.length;
+      this.productsImageFiles.push(file);
+      this.newImagePreviews.push('');
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        // indexed assignment keeps previews aligned with productsImageFiles
+        // even if reads complete out of order
+        this.newImagePreviews[idx] = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
-  deleteproductImage(url: string) {
-    const idx = this.producturls.indexOf(url);
-    if (idx !== -1) {
-      this.producturls.splice(idx, 1);
-      if (this.productsImageFiles[idx]) {
-        this.productsImageFiles.splice(idx, 1);
-      }
-    }
-    this.deletedImage = true;
+  removeExistingImage(index: number) {
+    this.existingImageUrls.splice(index, 1);
+  }
+
+  removeNewImage(index: number) {
+    this.productsImageFiles.splice(index, 1);
+    this.newImagePreviews.splice(index, 1);
   }
 
   VideoDetectFile(event: any) {
@@ -494,14 +370,8 @@ export class ProductsComponent extends Utils implements OnInit {
     }
   }
 
-  getStatues() {
-    this.statuses = this.statusService.getStatus('COMMON');
-    console.log(this.statuses);
-  }
-
   productType(event: any) {
-    console.log('checkproducevnt', event);
-    if (event === 'Variant') {
+    if (event === 'variant') {
       this.getProductAttribute();
       if (this.ProductVariants().length === 0) {
         this.ProductVariants().push(this.createVarients());
@@ -509,16 +379,12 @@ export class ProductsComponent extends Utils implements OnInit {
       }
     } else {
       this.ProductVariants().clear();
-      // FIX: reset map when switching away from Variant
       this.getproductattributevalues = {};
     }
   }
 
-  updateDescription(value: string, index: number) {
-    const current = this.ProductTranslations().at(index).get('Description')?.value;
-    if (current !== value) {
-      this.ProductTranslations().at(index).patchValue({ Description: value });
-    }
+  updateDescription(value: string) {
+    this.productsForm.patchValue({ description: value }, { emitEvent: false });
   }
 
   onDelete(element: any): void {
@@ -533,7 +399,7 @@ export class ProductsComponent extends Utils implements OnInit {
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.commonService.deleteApi(`products/${element?.Id || element?.id}`).subscribe({
+        this.commonService.deleteApi(`products/${element?.id}`).subscribe({
           next: () => {
             Swal.fire({
               title: 'Deleted!',
@@ -559,106 +425,101 @@ export class ProductsComponent extends Utils implements OnInit {
   }
 
   SubmitProductForm(form: FormGroup) {
-    console.log('checkvale', form.value);
-    this.selectedTab = this.tabValidate(form, 'ProductTranslations', 'Name');
-    if (form.valid) {
-      const formData = new FormData();
-
-      if (this.productsImageFiles.length > 0) {
-        formData.append('image', this.productsImageFiles[0]);
-        this.productsImageFiles.forEach((file: File) => {
-          formData.append('images', file);
-        });
-      }
-      if (this.videoFile) {
-        formData.append('video', this.videoFile);
-      }
-      if (this.deletedImage) {
-        formData.append('UploadImage', '');
-      }
-
-      const mappedVariants = (form.value.ProductVariants || []).map((v: any) => ({
-        ...v,
-        ProductVariantCode: v.barcode || v.ProductVariantCode || ''
-      }));
-
-      const payload = {
-        ...form.value,
-        ProductVariants: mappedVariants,
-        stock: form.value.StockInHand,
-        ProductFeatures: [],
-        ProductCombos: [],
-        BrandIds: []
-      };
-
-      for (var key in payload) {
-        const value = payload[key];
-        if (value === null || value === undefined) {
-          continue;
-        }
-        if (Array.isArray(payload[key])) {
-          formData.append(key, JSON.stringify(payload[key]));
-        } else {
-          formData.append(key, payload[key]);
-        }
-      }
-
-      this.formDataSubmit(
-        this.productsForm.value.Id,
-        formData,
-        this.productsForm,
-        this.apiRoute,
-        {
-          redirect: '/' + this.uiPagePath,
-          formInitialValues: this.formInitialValues,
-          commonService: this.commonService,
-          router: this.router
-        }
-      ).then(() => {
-        this.closeProductForm();
-      });
-
-    } else {
+    if (form.invalid) {
       this.validateAllFormFields(form);
+      return;
     }
+
+    const formData = new FormData();
+
+    // Each newly picked file is sent exactly once, as part of the gallery —
+    // the backend derives the cover image from images[0] automatically.
+    this.productsImageFiles.forEach((file: File) => {
+      formData.append('images', file);
+    });
+    // Tells the backend which already-saved gallery images to keep (lets
+    // edit actually replace/shrink the gallery instead of only appending).
+    if (this.formMode === 'edit') {
+      formData.append('existing_images', JSON.stringify(this.existingImageUrls));
+    }
+    if (this.videoFile) {
+      formData.append('video', this.videoFile);
+    }
+
+    const { variants, Id, ...rest } = form.value;
+
+    Object.keys(rest).forEach((key) => {
+      const value = rest[key];
+      if (value === null || value === undefined || value === '') return;
+      formData.append(key, value);
+    });
+
+    if (rest.product_type === 'variant') {
+      formData.append('variants', JSON.stringify(variants || []));
+    }
+
+    this.showLoader = true;
+
+    const request$ = Id
+      ? this.commonService.putFormData(`products/${Id}`, formData)
+      : this.commonService.postFormData('products/add', formData);
+
+    request$.subscribe({
+      next: () => {
+        this.showLoader = false;
+        Swal.fire({
+          icon: 'success',
+          title: Id ? 'Updated Successfully' : 'Added Successfully',
+          showConfirmButton: false,
+          timer: 1500,
+          width: 400,
+        }).then(() => {
+          this.closeProductForm();
+          this.mattablechild.getData();
+        });
+      },
+      error: (err: any) => {
+        this.showLoader = false;
+        this.errorAlert(err);
+      }
+    });
   }
 
   closeProductForm() {
     this.showProductsForm = false;
     this.formMode = '';
-    this.producturls = [];
-    // FIX: reset per-row map on close
+    this.existingImageUrls = [];
     this.getproductattributevalues = {};
     this.productsForm.enable();
-    this.productsForm.reset();
     this.resetForm();
   }
 
   resetForm() {
-    this.ProductTranslations().clear();
     this.ProductVariants().clear();
-    this.languageIds = [];
-    // FIX: reset per-row map on reset
     this.getproductattributevalues = {};
 
-    for (let lang of this.languages) {
-      this.ProductTranslations().push(this.createItem());
-      this.languageIds.push({ LanguageId: lang.Id });
-    }
-
-    this.productsForm.patchValue({
-      ProductTranslations: this.languageIds,
+    this.productsForm.reset({
+      Id: '',
+      name: '',
+      description: '',
+      category: '',
       price: '',
-      barcode: ''
+      stock: 0,
+      stock_in_hand: '',
+      barcode: '',
+      product_type: 'simple',
+      status: 'active',
+      registration_id: this.authService.fetchUserDetails()?.user?.id || '',
+      variants: [],
     });
 
-    this.producturls = [];
+    this.existingImageUrls = [];
     this.productsImageFiles = [];
+    this.newImagePreviews = [];
     this.videoFile = null;
     this.videoFileName = '';
     this.videoUrl = '';
     this.selectedTab = 0;
-    this.deletedImage = false;
   }
 
   deleteVideoFile() {

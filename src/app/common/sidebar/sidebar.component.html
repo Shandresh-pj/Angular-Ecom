@@ -124,49 +124,5 @@
                 </mat-expansion-panel>
                 </mat-accordion>
 
-                <mat-accordion>
-                <mat-expansion-panel
-                hideToggle="true"
-                [expanded]="false"
-                disabled
-                >
-                  <mat-expansion-panel-header >
-                    <mat-panel-title>
-                      <img src="/Logo/masters.svg"  class="filter" alt="mastericon" style="width: 24px; height: 24px;">
-                      <a
-                        routerLink="/app-admin"
-                        [queryParams]="{ data: encrypted }"
-                         [class.active]="activeRouteUrl.startsWith('/app-admin')"
-                        class="sidemenu-item title ms-2"
-                      >
-                        App Admin
-                      </a>
-                    </mat-panel-title>
-                  </mat-expansion-panel-header>
-                </mat-expansion-panel>
-                </mat-accordion>
-
-                <mat-accordion>
-                <mat-expansion-panel
-                hideToggle="true"
-                [expanded]="false"
-                disabled
-                >
-                  <mat-expansion-panel-header >
-                    <mat-panel-title>
-                      <img src="/Logo/masters.svg"  class="filter" alt="mastericon" style="width: 24px; height: 24px;">
-                      <a
-                        routerLink="/e-products"
-                        [queryParams]="{ data: encrypted }"
-                         [class.active]="activeRouteUrl.startsWith('/e-products')"
-                        class="sidemenu-item title ms-2"
-                      >
-                        Products
-                      </a>
-                    </mat-panel-title>
-                  </mat-expansion-panel-header>
-                </mat-expansion-panel>
-                </mat-accordion>
-              
               </div></div></ng-scrollbar>
             

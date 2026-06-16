@@ -9,12 +9,11 @@ import { DashboardComponent } from '../../dashboard/dashboard.component';
 import CryptoJS from 'crypto-js';
 
 const STATIC_RESOURCES = [
-  { ResourceId: '4', ResourceName: 'Testimonial', ResourceUrl: '/testimonial', children: [] },
-  { ResourceId: '5', ResourceName: 'Supports', ResourceUrl: '/supports', children: [] },
-  { ResourceId: '6', ResourceName: 'Feedback', ResourceUrl: '/feedback', children: [] },
-  { ResourceId: '7', ResourceName: 'Contact Us', ResourceUrl: '/contact-us', children: [] },
-  { ResourceId: '9', ResourceName: 'Dealer', ResourceUrl: '/dealer', children: [] },
-  { ResourceId: '10', ResourceName: 'Reseller', ResourceUrl: '/reseller', children: [] },
+ // { ResourceId: '4', ResourceName: 'Testimonial', ResourceUrl: '/testimonial', children: [] },
+  //{ ResourceId: '5', ResourceName: 'Supports', ResourceUrl: '/supports', children: [] },
+//  { ResourceId: '6', ResourceName: 'Feedback', ResourceUrl: '/feedback', children: [] },
+ // { ResourceId: '7', ResourceName: 'Contact Us', ResourceUrl: '/contact-us', children: [] },
+ // { ResourceId: '10', ResourceName: 'Reseller', ResourceUrl: '/reseller', children: [] },
   { ResourceId: '11', ResourceName: 'Admin', ResourceUrl: '/admin', children: [] },
   { ResourceId: '13', ResourceName: 'Orders', ResourceUrl: '/orders', children: [] },
   { ResourceId: '15', ResourceName: 'Transaction', ResourceUrl: '/transaction', children: [] },
@@ -24,13 +23,11 @@ const STATIC_RESOURCES = [
   { ResourceId: '24', ResourceName: 'Product Attribute Value', ResourceUrl: '/product-attribute-value', children: [] },
   { ResourceId: '40', ResourceName: 'Status', ResourceUrl: '/status', children: [] },
   { ResourceId: '26', ResourceName: 'Setting', ResourceUrl: '/setting', children: [] },
-  { ResourceId: '27', ResourceName: 'Master Data', ResourceUrl: '/master-data', children: [] },
-  { ResourceId: '29', ResourceName: 'Lable', ResourceUrl: '/lable', children: [] },
-  { ResourceId: '32', ResourceName: 'Advertisers', ResourceUrl: '/advertisers', children: [] },
-  { ResourceId: '33', ResourceName: 'App Admins', ResourceUrl: '/app-admins', children: [] },
-  { ResourceId: '34', ResourceName: 'Resources', ResourceUrl: '/resources', children: [] },
+ // { ResourceId: '27', ResourceName: 'Master Data', ResourceUrl: '/master-data', children: [] },
+ // { ResourceId: '33', ResourceName: 'App Admins', ResourceUrl: '/app-admins', children: [] },
+ // { ResourceId: '34', ResourceName: 'Resources', ResourceUrl: '/resources', children: [] },
   { ResourceId: '35', ResourceName: 'App Admin', ResourceUrl: '/app-admin', children: [] },
-  { ResourceId: '36', ResourceName: 'E-Products', ResourceUrl: '/e-products', children: [] },
+  // { ResourceId: '36', ResourceName: 'E-Products', ResourceUrl: '/e-products', children: [] },
 ];
 
 export const webActionFactory = (
@@ -83,10 +80,6 @@ export class ResourcesService {
       '../../pages/contact-us/contact-us.component'
     ).then((m) => m.ContactUsComponent);
 
-    this.AllComponents['dealer'] = import(
-      '../../pages/dealer/dealer.component'
-    ).then((m) => m.DealerComponent);
-
     this.AllComponents['reseller'] = import(
       '../../pages/reseller/reseller.component'
     ).then((m) => m.ResellerComponent);
@@ -130,14 +123,6 @@ export class ResourcesService {
     this.AllComponents['master-data'] = import(
       '../../pages/master-data/master-data.component'
     ).then((m) => m.MasterDataComponent);
-
-    this.AllComponents['lable'] = import(
-      '../../pages/lable/lable.component'
-    ).then((m) => m.LableComponent);
-
-    this.AllComponents['advertisers'] = import(
-      '../../pages/advertisers/advertisers.component'
-    ).then((m) => m.AdvertisersComponent);
 
     this.AllComponents['app-admins'] = import(
       '../../pages/app-admins/app-admins.component'

@@ -70,7 +70,7 @@ export class SignInComponent extends Utils {
     const payload = {
       email: email,
       password: password,
-      usertype: 'superadmin',
+    //  usertype: 'superadmin',
     // CompanyCode: 'ChinTam'
     };
 
