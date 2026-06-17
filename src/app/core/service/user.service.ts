@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { ResourcesService } from './routes.service';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,12 @@ export class UserService {
     private resoucesService: ResourcesService,
       private router: Router
   ) {}
+
+  private profileUpdated = new Subject<void>();
+  profileUpdated$ = this.profileUpdated.asObservable();
+  notifyProfileUpdated() {
+    this.profileUpdated.next();
+  }
   private CurrentCompanyType:string='';
   private userResources: any = [];
   private resourceActionCache: any = null;

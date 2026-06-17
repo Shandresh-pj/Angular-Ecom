@@ -1,0 +1,245 @@
+.sign-in-area {
+    background-color: var(--whiteColor);
+    padding: {
+        top: 100px;
+        bottom: 135px;
+    };
+    &.dark-theme {
+        background-color: #0A0E19;
+    }
+}
+
+.ap-content{
+padding-left: 10px;
+text-align: center;
+}
+.nothing01{
+border-radius: 20px !important;
+height: 100%;
+}
+
+.form-content img{
+width: 100% !important;
+padding-left: 10px !important;
+padding-right: 10px !important;
+}
+
+.form-content{
+align-content: center;
+}
+
+.moving-bton{
+padding-bottom: 20px;
+}
+.moving-bton button{
+margin-top: 12px !important;
+ width: 100% !important;
+ padding:  12px !important;
+ border-radius: 20px;
+ background-color: var(--primaryColor);
+ color: white !important;
+ text-align: center;
+ font-weight: bold !important;
+}
+
+.trezo-form {
+    border-radius:16px;
+    padding:40px;
+     width: 100%;
+    padding: {
+        left: 12.5px;
+        right: 12.5px;
+    };
+
+.tittle h2{
+font-size: 26px !important;
+}
+
+.tittle .subtittle{
+    font-size: 14px;
+    color: #6b7280;
+    margin-top: 8px;
+    margin-bottom: 18px;
+}
+
+    .form-content {
+        padding-left: 0;
+         text-align:center;
+
+img{
+    display:block;
+    margin:auto;
+    height:auto;
+    object-fit:contain;
+}
+    }
+    &.component-dark-theme {
+        .form-content {
+            .title {
+                p {
+                    color: var(--bodyColor);
+                }
+            }
+        }
+    }
+    &.component-rtl-enabled {
+        .form-content {
+            padding: {
+                left: 0;
+                right: 90px;
+            };
+        }
+    }
+}
+
+/* Max width 767px */
+@media only screen and (max-width : 767px) {
+
+    .sign-in-area {
+        padding: {
+            top: 60px;
+            bottom: 60px;
+        };
+    }
+}
+
+/* Min width 576px to Max width 767px */
+@media only screen and (min-width : 576px) and (max-width : 767px) {
+
+    .trezo-form {
+        max-width: 540px;
+    }
+}
+
+/* Min width 768px to Max width 991px */
+@media only screen and (min-width : 768px) and (max-width : 991px) {
+
+    .sign-in-area {
+        padding: {
+            top: 80px;
+            bottom: 80px;
+        };
+    }
+    .trezo-form {
+        max-width: 720px;
+    }
+}
+
+/* Min width 992px to Max width 1199px */
+@media only screen and (min-width : 992px) and (max-width : 1199px) {
+
+    .sign-in-area {
+        padding: {
+            top: 100px;
+            bottom: 100px;
+        };
+    }
+    .trezo-form {
+        max-width: 960px;
+    }
+
+    .otp-input {
+        width: clamp(28px, 4vw, 38px) !important;
+        height: clamp(34px, 4.5vw, 42px) !important;
+        font-size: clamp(14px, 2vw, 18px) !important;
+    }
+}
+
+/* Min width 1200px to Max width 1399px */
+@media only screen and (min-width: 1200px) and (max-width: 1399px) {
+
+    .sign-in-area {
+        padding: {
+            top: 120px;
+            bottom: 120px;
+        };
+    }
+    .trezo-form {
+        max-width: 1140px;
+    }
+}
+
+@media only screen and (min-width: 1400px) {
+    .trezo-form {
+        max-width: 1320px;
+    }
+}
+
+.contentset{
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: var(--bodyColor);
+    background-color: #f6f7f9;
+    font-family: Neusharp, sans-serif !important;
+}
+
+.otp-boxes {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  &.otp-boxes-failed .otp-input {
+    border-color: #dc3545;
+  }
+
+  &.otp-boxes-success .otp-input {
+    border-color: #28a745;
+  }
+}
+
+.otp-input {
+    width: 46px;
+    height: 50px;
+    border-radius: 8px;
+    border: solid 1px #c5c5c5;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
+
+    &:focus {
+        outline: none;
+        border-color: var(--primaryColor);
+        box-shadow: 0 0 0 2px rgba(96, 93, 255, 0.15);
+    }
+}
+
+.otp-error {
+    color: #dc3545;
+    font-size: 13px;
+    margin: -6px 0 14px;
+}
+
+.resend_otp{
+    background-color: #605DFF;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 6px 14px;
+    margin-left: 6px;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.resend-cooldown {
+    color: #6b7280;
+    margin-left: 6px;
+}
+
+.otp-btn .btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  mat-spinner {
+    display: inline-block;
+  }
+}

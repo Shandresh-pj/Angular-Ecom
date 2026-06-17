@@ -16,6 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SocketService } from '../../core/service/socket.service';
 import Swal from 'sweetalert2';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-header',
@@ -48,6 +49,7 @@ export class HeaderComponent extends Utils implements OnInit {
     PanicAlert: any;
     ListShowNew: boolean = false;
     ProfileData:any;
+    profileImage: string = 'Logo/admin.png';
 
     constructor(
         private formBuilder: FormBuilder,
@@ -104,7 +106,30 @@ export class HeaderComponent extends Utils implements OnInit {
         //     this.EmployeeList.OriginalCompany.PanicAlertTo.includes(this.EmployeeList.Id)) {
         //     this.getPanicAlert();
         //     }
-     
+
+        this.loadProfile();
+        this.userService.profileUpdated$.subscribe(() => {
+            this.loadProfile();
+        });
+    }
+
+    loadProfile() {
+        const userId = this.authService.fetchUserDetails()?.user?.id;
+        if (!userId) {
+            return;
+        }
+        this.commonService.getApi(`profile/${userId}`).subscribe((res: any) => {
+            this.ProfileData = res?.data || res?.user || res;
+            this.profileImage = this.ProfileData?.image
+                ? (this.ProfileData.image.startsWith('http')
+                    ? this.ProfileData.image
+                    : `${environment.domain.replace('/api', '')}${this.ProfileData.image}`)
+                : 'Logo/admin.png';
+        });
+    }
+
+    goToProfile() {
+        this.router.navigate(['/setting']);
     }
     checkAndChangeUrl(url: string): void {
         let urlNoQuery = url && url.split('?')[0];

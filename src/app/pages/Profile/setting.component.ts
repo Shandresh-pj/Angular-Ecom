@@ -18,7 +18,7 @@ import { MatInput } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { StatusService } from '../../core/service/status.service';
 import Swal from 'sweetalert2';
-import { environment } from '../../../environments/environment.trypdek.stage';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-setting',
@@ -42,6 +42,7 @@ export class SettingComponent extends Utils implements OnInit {
 
     selectedFile: any;
     imagePreview: any;
+    userId: any;
     constructor(
         private formBuilder: FormBuilder,
         public themeService: CustomizerSettingsService,
@@ -98,11 +99,16 @@ export class SettingComponent extends Utils implements OnInit {
 }
 
 GetProfile() {
+    this.userId = this.authService.fetchUserDetails()?.user?.id;
+    if (!this.userId) {
+        return;
+    }
+
     this.commonService
-        .getApi('profile/all')
+        .getApi(`profile/${this.userId}`)
         .subscribe((res: any) => {
 
-            const profile = res?.user || res?.data || res;
+            const profile = res?.data || res?.user || res;
 
                 this.UsersForm.patchValue({
                     id: profile?.id || '',
@@ -111,16 +117,17 @@ GetProfile() {
                     mobilenumber: profile?.mobilenumber || '',
                     address: profile?.address || '',
                     usertype: profile?.usertype || 'Super Admin',
-                    images: profile?.image || ''
+                    status: profile?.status || '',
+                    image: profile?.image || ''
                 });
 
                 // Set image preview
                 if (profile?.image) {
-                    this.imagePreview = profile.image.startsWith('http') 
-                        ? profile.image 
-                        : `${environment.domain}${profile.image}`;   // Adjust base URL
+                    this.imagePreview = profile.image.startsWith('http')
+                        ? profile.image
+                        : `${environment.domain.replace('/api', '')}${profile.image}`;
                 } else {
-                    this.imagePreview = '';   // No image
+                    this.imagePreview = 'Logo/admin.png';
                 }
 
                 console.log("Profile Loaded:", this.UsersForm.value);
@@ -134,28 +141,39 @@ GetProfile() {
         this.showUsersForm = false;
         this.formMode = '';
         this.selectedRow = null;
-         this.UsersForm.enable();
+        this.UsersForm.enable();
+        this.router.navigate(['/dashboard']);
     }
 
 SubmitUsersForm() {
-    const formData = new FormData();
+    if (!this.userId) {
+        return;
+    }
 
-    Object.keys(this.UsersForm.value).forEach((key: string) => {
-        const value = this.UsersForm.value[key];
+    const formData = new FormData();
+    const formValue = this.UsersForm.value;
+    const allowedFields = ['name', 'email', 'mobilenumber', 'address', 'usertype', 'status'];
+
+    allowedFields.forEach((key: string) => {
+        const value = formValue[key];
         if (value !== null && value !== undefined) {
             formData.append(key, value);
         }
     });
 
-    this.commonService.putApi('profile/update', formData).subscribe({
+    if (formValue.image instanceof File) {
+        formData.append('image', formValue.image);
+    }
+
+    this.commonService.putApi(`profile/${this.userId}`, formData).subscribe({
         next: (res: any) => {
+            this.userService.notifyProfileUpdated();
             Swal.fire({
                 title: 'Success',
                 text: 'Profile Updated Successfully',
                 icon: 'success'
             }).then(() => {
-                this.UsersForm.reset();
-                this.GetProfile(); // refresh data
+                this.router.navigate(['/dashboard']);
             });
         },
         error: (err) => {
@@ -173,16 +191,38 @@ SubmitUsersForm() {
 
 onFileSelect(event: any): void {
     const file = event.target.files[0];
-    if (file) {
-        this.UsersForm.patchValue({ image: file });
-
-        // Optional: Preview
-        const reader = new FileReader();
-        reader.onload = () => {
-            this.imagePreview = reader.result as string;
-        };
-        reader.readAsDataURL(file);
+    if (!file) {
+        return;
     }
+
+    if (!file.type.startsWith('image/')) {
+        Swal.fire({
+            title: 'Invalid File',
+            text: 'Please select a valid image file',
+            icon: 'error'
+        });
+        event.target.value = '';
+        return;
+    }
+
+    const maxSizeInBytes = 2 * 1024 * 1024;
+    if (file.size > maxSizeInBytes) {
+        Swal.fire({
+            title: 'File Too Large',
+            text: 'Image size should not exceed 2 MB',
+            icon: 'error'
+        });
+        event.target.value = '';
+        return;
+    }
+
+    this.UsersForm.patchValue({ image: file });
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        this.imagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
 }
 
 }

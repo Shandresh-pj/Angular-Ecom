@@ -1,0 +1,76 @@
+<div
+    [class.dark-theme]="themeService.isDark()" class="contentset"
+>
+    <div
+        class="trezo-form ml-auto mr-auto "
+        [class.component-dark-theme]="themeService.isDark()"
+        [class.component-rtl-enabled]="themeService.isRTLEnabled()"
+    >
+        <div class="row ">
+            <div class="col-12 col-lg-6 col-md-12 order-2 order-lg-1">
+                <div class="form-content nothing01">
+                    <div class="box-image">
+                    <img src="Logo/fb_logo.jpg" alt="verify-otp-image">
+                    </div>
+                    </div>
+                    </div>
+                   <div class="col-12 col-lg-6 col-md-12 order-1 order-lg-2">
+                    <div class="ap-content">
+                        <div class="tittle">
+                                <h2>Verify OTP</h2>
+                                <p class="subtittle">Enter the 6-digit OTP sent to <strong>{{email}}</strong></p>
+                            </div>
+
+                        <div class="otp-boxes mb-3" [class.otp-boxes-success]="otpStatus === 'success'" [class.otp-boxes-failed]="otpStatus === 'failed'">
+                            @for (i of otpBoxIndexes; track i) {
+                                <input
+                                    #otpBox
+                                    type="text"
+                                    inputmode="numeric"
+                                    autocomplete="one-time-code"
+                                    maxlength="1"
+                                    class="otp-input"
+                                    [value]="otpDigits[i]"
+                                    (input)="onDigitInput($event, i)"
+                                    (keydown)="onDigitKeydown($event, i)"
+                                    (paste)="onPaste($event)"
+                                />
+                            }
+                        </div>
+
+                        @if (otpError) {
+                            <p class="otp-error text-center">{{otpError}}</p>
+                        }
+
+                            <div class="moving-bton">
+                                <button mat-button type="button" (click)="onVerify()" class="otp-btn" [disabled]="isLoading">
+                                    <span class="btn-content">
+                                        @if (isLoading) {
+                                            <mat-spinner diameter="18"></mat-spinner>
+                                            <span>Verifying...</span>
+                                        } @else {
+                                            <i class="material-symbols-outlined">verified</i>
+                                            <span>Verify OTP</span>
+                                        }
+                                    </span>
+                                </button>
+                            </div>
+
+                        <p class="info text-center">
+                            Didn't receive the OTP?
+                            @if (resendCooldown > 0) {
+                                <span class="resend-cooldown"> Resend in {{resendCooldown}}s</span>
+                            } @else {
+                                <button type="button" class="resend_otp" (click)="onResend()" [disabled]="isResending">
+                                    {{isResending ? 'Resending...' : 'Resend OTP'}}
+                                </button>
+                            }
+                        </p>
+                        <p class="info text-center">
+                            <a routerLink="/forgot-password" class="fw-semibold text-primary">Change email address</a>
+                        </p>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>

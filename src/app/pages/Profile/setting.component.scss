@@ -1,7 +1,41 @@
+.profile-image-wrapper{
+    position:relative;
+    width:120px;
+    height:120px;
+    cursor:pointer;
+}
+
 .profile-image{
     width:120px;
     height:120px;
     border-radius:50%;
     object-fit:cover;
     border:1px solid #ccc;
+}
+
+.profile-image-edit{
+    position:absolute;
+    bottom:0;
+    right:0;
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background-color:#3085d6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:2px solid #fff;
+
+    mat-icon{
+        color:#fff;
+        font-size:18px;
+        width:18px;
+        height:18px;
+        line-height:18px;
+    }
+}
+
+input[readonly]{
+    background-color:#f5f5f5;
+    cursor:not-allowed;
 }

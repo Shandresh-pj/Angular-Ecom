@@ -64,7 +64,7 @@ export class ProductsComponent extends Utils implements OnInit {
   videoFile: File | null = null;
   videoFileName: string = '';
   videoUrl: string = '';
-  category: any;  
+  category: any;
   selectedTab: any = 0;
   public uiPagePath = 'products';
   getdetailproducts: any;
@@ -72,6 +72,10 @@ export class ProductsComponent extends Utils implements OnInit {
 
   // per-row attribute values map (row index -> ProductAttributeValue[])
   getproductattributevalues: { [index: number]: any[] } = {};
+
+  // Product-level attribute/value tag (independent of variants) — links
+  // the product to an existing ProductAttributeValue via its product_ids.
+  productLevelAttributeValues: any[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -95,6 +99,8 @@ export class ProductsComponent extends Utils implements OnInit {
       product_type: ['simple', Validators.required],
       status: ['active', Validators.required],
       registration_id: [this.authService.fetchUserDetails()?.user?.id || ''],
+      ProductAttributeId: [''],
+      ProductAttributeValueId: [''],
       variants: this.formBuilder.array([]),
     });
 
@@ -152,6 +158,7 @@ export class ProductsComponent extends Utils implements OnInit {
 
   ngOnInit(): void {
     this.getCategory();
+    this.getProductAttribute();
   }
 
   // Backend sends created_at/updated_at as "DD:MM:YYYY HH:mm:ss", which the
@@ -200,6 +207,46 @@ export class ProductsComponent extends Utils implements OnInit {
 
   Attributeselectvalue(attributeId: any, rowIndex: number) {
     this.getProductAttributeValueForRow(attributeId, rowIndex);
+  }
+
+  // Product-level attribute tag (separate from the Variants tab) — picking
+  // an attribute loads its values so the matching value can be selected.
+  onProductLevelAttributeChange(attributeId: any) {
+    this.productsForm.get('ProductAttributeValueId')?.setValue('');
+    if (!attributeId) {
+      this.productLevelAttributeValues = [];
+      return;
+    }
+    this.commonService.getApi('ProductAttributeValue/All', { ProductAttributeId: attributeId }).subscribe({
+      next: (res: any) => {
+        this.productLevelAttributeValues = res?.data?.data.map((item: any) => ({
+          ...item,
+          Name: item?.ProductAttributeValueTranslations?.[0]?.Name || item?.Name
+        }));
+      },
+      error: () => {
+        this.productLevelAttributeValues = [];
+      }
+    });
+  }
+
+  // Links the saved product to the chosen ProductAttributeValue, merging
+  // with whatever products it's already linked to (instead of overwriting
+  // them) since Update replaces the value's entire product_ids list.
+  private linkProductAttributeValue(productId: number, valueId: number) {
+    return new Promise<void>((resolve) => {
+      this.commonService.getApi(`ProductAttributeValue/Detail/${valueId}`).subscribe({
+        next: (res: any) => {
+          const existingIds: number[] = Array.isArray(res?.data?.product_ids) ? res.data.product_ids : [];
+          const mergedIds = Array.from(new Set([...existingIds, productId]));
+          this.commonService.postApi(`ProductAttributeValue/Update/${valueId}`, { product_ids: mergedIds }).subscribe({
+            next: () => resolve(),
+            error: () => resolve(),
+          });
+        },
+        error: () => resolve(),
+      });
+    });
   }
 
   getProductAttributeValueForRow(id: any, rowIndex: number) {
@@ -294,6 +341,33 @@ export class ProductsComponent extends Utils implements OnInit {
           Id: productFields?.id,
         });
 
+        // Prefill the product-level attribute/value tag from whatever the
+        // backend already reports for this product (derived from variants
+        // and/or the attribute-value junction table).
+        const taggedAttribute = productFields?.ProductAttributes?.[0];
+        const taggedValue = productFields?.ProductAttributeValues?.[0];
+        this.productLevelAttributeValues = [];
+        if (taggedAttribute) {
+          this.productsForm.get('ProductAttributeId')?.setValue(taggedAttribute.Id);
+          this.commonService.getApi('ProductAttributeValue/All', { ProductAttributeId: taggedAttribute.Id }).subscribe({
+            next: (res: any) => {
+              this.productLevelAttributeValues = res?.data?.data.map((item: any) => ({
+                ...item,
+                Name: item?.ProductAttributeValueTranslations?.[0]?.Name || item?.Name
+              }));
+              if (taggedValue) {
+                this.productsForm.get('ProductAttributeValueId')?.setValue(taggedValue.Id);
+              }
+            },
+            error: () => {
+              this.productLevelAttributeValues = [];
+            }
+          });
+        } else {
+          this.productsForm.get('ProductAttributeId')?.setValue('');
+          this.productsForm.get('ProductAttributeValueId')?.setValue('');
+        }
+
         this.ProductVariants().clear();
         this.getproductattributevalues = {};
 
@@ -329,6 +403,9 @@ export class ProductsComponent extends Utils implements OnInit {
     } else if (mode === 'add') {
       this.ProductVariants().clear();
       this.getproductattributevalues = {};
+      this.productLevelAttributeValues = [];
+      this.productsForm.get('ProductAttributeId')?.setValue('');
+      this.productsForm.get('ProductAttributeValueId')?.setValue('');
     }
   }
 
@@ -446,7 +523,10 @@ export class ProductsComponent extends Utils implements OnInit {
       formData.append('video', this.videoFile);
     }
 
-    const { variants, Id, ...rest } = form.value;
+    // ProductAttributeId/ProductAttributeValueId are a product-level tag
+    // (not columns on the Product entity) — handled separately below via
+    // the existing ProductAttributeValue endpoints, never sent to /products.
+    const { variants, Id, ProductAttributeId, ProductAttributeValueId, ...rest } = form.value;
 
     Object.keys(rest).forEach((key) => {
       const value = rest[key];
@@ -465,7 +545,12 @@ export class ProductsComponent extends Utils implements OnInit {
       : this.commonService.postFormData('products/add', formData);
 
     request$.subscribe({
-      next: () => {
+      next: async (res: any) => {
+        const productId = Id || res?.data?.id;
+        if (productId && ProductAttributeId && ProductAttributeValueId) {
+          await this.linkProductAttributeValue(productId, ProductAttributeValueId);
+        }
+
         this.showLoader = false;
         Swal.fire({
           icon: 'success',
@@ -490,6 +575,7 @@ export class ProductsComponent extends Utils implements OnInit {
     this.formMode = '';
     this.existingImageUrls = [];
     this.getproductattributevalues = {};
+    this.productLevelAttributeValues = [];
     this.productsForm.enable();
     this.resetForm();
   }
@@ -497,6 +583,7 @@ export class ProductsComponent extends Utils implements OnInit {
   resetForm() {
     this.ProductVariants().clear();
     this.getproductattributevalues = {};
+    this.productLevelAttributeValues = [];
 
     this.productsForm.reset({
       Id: '',
@@ -510,6 +597,8 @@ export class ProductsComponent extends Utils implements OnInit {
       product_type: 'simple',
       status: 'active',
       registration_id: this.authService.fetchUserDetails()?.user?.id || '',
+      ProductAttributeId: '',
+      ProductAttributeValueId: '',
       variants: [],
     });
 

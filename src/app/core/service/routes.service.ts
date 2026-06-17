@@ -28,6 +28,7 @@ const STATIC_RESOURCES = [
  // { ResourceId: '34', ResourceName: 'Resources', ResourceUrl: '/resources', children: [] },
   { ResourceId: '35', ResourceName: 'App Admin', ResourceUrl: '/app-admin', children: [] },
   // { ResourceId: '36', ResourceName: 'E-Products', ResourceUrl: '/e-products', children: [] },
+  { ResourceId: '41', ResourceName: 'Change Password', ResourceUrl: '/change-password', children: [] },
 ];
 
 export const webActionFactory = (
@@ -119,6 +120,10 @@ export class ResourcesService {
     this.AllComponents['setting'] = import(
       '../../pages/Profile/setting.component'
     ).then((m) => m.SettingComponent);
+
+    this.AllComponents['change-password'] = import(
+      '../../pages/change-password/change-password.component'
+    ).then((m) => m.ChangePasswordComponent);
 
     this.AllComponents['master-data'] = import(
       '../../pages/master-data/master-data.component'
@@ -225,6 +230,30 @@ export class ResourcesService {
         loadComponent: () =>
           import('../../authentication/sign-in/sign-in.component').then(
             (m) => m.SignInComponent
+          ),
+        canActivate: [NonAuthGuard],
+      },
+      {
+        path: 'forgot-password',
+        loadComponent: () =>
+          import('../../authentication/forgot-password/forgot-password.component').then(
+            (m) => m.ForgotPasswordComponent
+          ),
+        canActivate: [NonAuthGuard],
+      },
+      {
+        path: 'verify-otp',
+        loadComponent: () =>
+          import('../../authentication/verify-otp/verify-otp.component').then(
+            (m) => m.VerifyOtpComponent
+          ),
+        canActivate: [NonAuthGuard],
+      },
+      {
+        path: 'reset-password',
+        loadComponent: () =>
+          import('../../authentication/reset-password/reset-password.component').then(
+            (m) => m.ResetPasswordComponent
           ),
         canActivate: [NonAuthGuard],
       },

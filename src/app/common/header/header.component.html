@@ -276,13 +276,12 @@
                     class="profile-menu-btn"
                 >
                     <img
-                        src="Logo/admin.png"
+                        [src]="profileImage"
                         class="rounded-circle"
                         alt="admin-image"
                     />
                     <span class="fw-semibold text-black">
-                        <!-- {{ FirstName }} -->
-                        {{EmployeeList?.FirstName}} {{EmployeeList?.LastName}}
+                        {{ ProfileData?.name }}
                     </span>
                 </button>
                 <mat-menu
@@ -292,16 +291,15 @@
                 >
                     <div class="admin d-flex align-items-center">
                         <img
-                            src="Logo/admin.png"
+                            [src]="profileImage"
                             class="rounded-circle"
                             alt="admin-image"
                         />
                         <div>
                             <span class="d-block text-black fw-medium">
-                                {{ FirstName }}
+                                {{ ProfileData?.name }}
                             </span>
-                            <span class="d-block">{{EmployeeList?.Role?.Name}} </span>
-                            <span class="d-block"style="color: black;">{{EmployeeList?.FirstName}} {{EmployeeList?.LastName}}</span>
+                            <span class="d-block">{{ ProfileData?.usertype }}</span>
                         </div>
                     </div>
                     <ul class="list p-0 mt-0 mb-0 list-unstyled">
@@ -357,11 +355,27 @@
                             </a>
                         </li> -->
                         <li>
-                            <a  class="d-block position-relative">
-                                    <i class="material-symbols-outlined">
-                                        manage_accounts
-                                    </i>
+                            <a
+                                routerLink="/setting"
+                                class="d-block position-relative"
+                                style="cursor: pointer"
+                            >
+                                <i class="material-symbols-outlined">
+                                    manage_accounts
+                                </i>
                                 Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                routerLink="/change-password"
+                                class="d-block position-relative"
+                                style="cursor: pointer"
+                            >
+                                <i class="material-symbols-outlined">
+                                    lock_reset
+                                </i>
+                                Change Password
                             </a>
                         </li>
                         <li>

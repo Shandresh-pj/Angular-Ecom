@@ -2,7 +2,7 @@
     <div class="row">
         <h4 style="margin-bottom: 15px;">Profile</h4>
         <mat-form-field [hidden]="true">
-            <input matInput placeholder="" formControlName="Id" type="text" />
+            <input matInput placeholder="" formControlName="id" type="text" />
         </mat-form-field>
 
         <div class="col-12 mt-4">
@@ -13,8 +13,12 @@
 
                 <div class="mt-2 d-flex justify-content-center">
 
-                    <img [src]="imagePreview || UsersForm.get('image')?.value" alt="Profile Image" class="profile-image"
-                        width="120" (click)="fileInput.click()" />
+                    <div class="profile-image-wrapper" (click)="fileInput.click()">
+                        <img [src]="imagePreview || UsersForm.get('image')?.value" alt="Profile Image" class="profile-image" />
+                        <span class="profile-image-edit">
+                            <mat-icon>photo_camera</mat-icon>
+                        </span>
+                    </div>
 
                     <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelect($event)" />
                 </div>
@@ -39,7 +43,7 @@
             <div class="form-group">
                 <mat-form-field [appearance]="formFieldAppearance" class="w-100">
                     <mat-label>Email</mat-label>
-                    <input matInput placeholder="" formControlName="email" type="text" />
+                    <input matInput placeholder="" formControlName="email" type="text" readonly />
                     @if (isFieldValid(UsersForm, 'email', 'required')) {
                         <mat-error>Email is required</mat-error>
                     }
@@ -55,7 +59,7 @@
                 <mat-form-field [appearance]="formFieldAppearance" class="w-100">
                     <mat-label> Mobile</mat-label>
                     <input matInput placeholder="" maxlength="10" (keypress)="numericOnly($event)"
-                        formControlName="mobilenumber" type="text" />
+                        formControlName="mobilenumber" type="text" readonly />
                     @if (isFieldValid(UsersForm, 'mobilenumber', 'required')) {
                         <mat-error>Mobile number is required</mat-error>
                     }

@@ -114,6 +114,36 @@
                     </div>
                 </div>
 
+                <!-- Product Attribute (product-level tag, independent of Variants) -->
+                <div class="col-md-4 mb-3">
+                    <div class="form-group">
+                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                            <mat-label>Product Attribute</mat-label>
+                            <mat-select formControlName="ProductAttributeId"
+                                (selectionChange)="onProductLevelAttributeChange($event.value)">
+                                <mat-option [value]="''">None</mat-option>
+                                @for(attr of productattribute; track attr){
+                                <mat-option [value]="attr?.Id">{{attr?.Name}}</mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <!-- Product Attribute Value -->
+                <div class="col-md-4 mb-3">
+                    <div class="form-group">
+                        <mat-form-field [appearance]="formFieldAppearance" class="w-100">
+                            <mat-label>Attribute Value</mat-label>
+                            <mat-select formControlName="ProductAttributeValueId">
+                                @for(attrval of productLevelAttributeValues; track attrval){
+                                <mat-option [value]="attrval?.Id">{{attrval?.Name}}</mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+
                 <!-- Tabs: Description | Product Images | Product Video | Product Variants -->
                 <div class="col-md-12 mb-3">
                     <div class="form-group">
